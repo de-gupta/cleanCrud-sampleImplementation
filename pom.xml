@@ -4,7 +4,7 @@
 
     <groupId>io.github.de-gupta</groupId>
     <artifactId>cleanCrud-sampleImplementation</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
 
     <name>cleaCrud-sampleImplementation</name>
     <description>A sample implementation of the clean crud library</description>
@@ -117,7 +117,7 @@
         <connection>scm:git:ssh://git@github.com/de-gupta/cleanCrud-sampleImplementation.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/de-gupta/cleanCrud-sampleImplementation.git</developerConnection>
         <url>https://github.com/de-gupta/cleanCrud-sampleImplementation.git</url>
-        <tag>v0.0.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
