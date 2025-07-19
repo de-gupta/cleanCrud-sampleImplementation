@@ -1,0 +1,66 @@
+@taskid = 1
+
+###
+GET {{url}}/1
+accept: */*
+
+###
+GET {{url}}/task/fetch
+accept: */*
+
+###
+GET {{url}}/task/fetch/{{taskid}}
+accept: */*
+
+###
+GET {{url}}/task/fetch/ids?ids=1&ids={{taskid}}&ids=3
+accept: */*
+
+###
+POST {{url}}/task/save
+accept: */*
+Content-Type: application/json
+
+{
+  "title": "my task without description"
+}
+
+###
+PUT {{url}}/task/update/{{taskid}}
+accept: */*
+Content-Type: application/json
+
+{
+  "title": "my task with important description",
+  "description": "Sample description for task no {{taskid}}"
+}
+
+###
+DELETE {{url}}/task/delete/{{taskid}}
+accept: */*
+
+###
+PATCH {{url}}/task/update/{{taskid}}
+accept: */*
+Content-Type: application/json
+
+{
+  "title": "my task with description",
+  "description": "updated description"
+}
+
+###
+POST {{url}}/task/save/batch
+accept: */*
+Content-Type: application/json
+
+[
+  {
+    "title": "my task with description 4",
+    "description": "Sample description for task"
+  },
+  {
+    "title": "my task with description 4",
+    "description": "Sample description for task"
+  }
+]

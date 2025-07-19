@@ -1,0 +1,30 @@
+package de.gupta.clean.crud.implementation.examples.task.useCases.crud;
+
+import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelCreate;
+import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelResponse;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@DisplayName("Task DELETE and OPTIONS Endpoint Tests")
+class TaskDELETEITCase extends AbstractTaskITCase
+{
+	@Test
+	@DisplayName("Should delete a task by ID")
+	void shouldDeleteTaskById() throws Exception
+	{
+		TaskAPIModelCreate taskToCreate = new TaskAPIModelCreate(uniqueTaskTitle("Task to delete"), Optional.empty());
+		TaskAPIModelResponse createdTask = createTask(taskToCreate);
+
+		mockMvc.perform(delete("/task/delete/{id}", createdTask.id()))
+			   .andExpect(status().isNoContent());
+
+		mockMvc.perform(get("/task/fetch/{id}", createdTask.id()))
+			   .andExpect(status().isNotFound());
+	}
+}

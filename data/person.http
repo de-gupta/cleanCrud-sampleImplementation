@@ -1,0 +1,65 @@
+@personid = 1
+
+###
+GET {{url}}/person/fetch
+accept: */*
+
+###
+GET {{url}}/person/fetch/{{personid}}
+accept: */*
+
+###
+GET {{url}}/person/fetch/ids?ids=1&ids={{personid}}&ids=3
+accept: */*
+
+###
+POST {{url}}/person/save
+accept: */*
+Content-Type: application/json
+
+{
+  "user": "admin",
+  "firstName": "John"
+}
+
+###
+PUT {{url}}/person/update/{{personid}}
+accept: */*
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "user": "admin",
+  "title": "my person with important description",
+  "description": "Sample description for person no {{personid}}"
+}
+
+###
+DELETE {{url}}/person/delete/{{personid}}
+accept: */*
+
+###
+PATCH {{url}}/person/update/{{personid}}
+accept: */*
+Content-Type: application/json
+
+{
+  "title": "my person with description",
+  "description": "updated description"
+}
+
+###
+POST {{url}}/person/save/batch
+accept: */*
+Content-Type: application/json
+
+[
+  {
+    "title": "my person with description 4",
+    "description": "Sample description for person"
+  },
+  {
+    "title": "my person with description 4",
+    "description": "Sample description for person"
+  }
+]
