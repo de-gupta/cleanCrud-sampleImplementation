@@ -22,7 +22,7 @@ accept: */*
 Content-Type: application/json
 
 {
-  "title": "my task without description"
+  "title": "my task without description "
 }
 
 ###
@@ -45,7 +45,7 @@ accept: */*
 Content-Type: application/json
 
 {
-  "title": "my task with description",
+  "title": "my task with description ",
   "description": "updated description"
 }
 
