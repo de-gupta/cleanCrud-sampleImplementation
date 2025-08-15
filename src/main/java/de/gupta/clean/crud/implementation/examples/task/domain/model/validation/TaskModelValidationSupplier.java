@@ -9,8 +9,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static de.gupta.validation.aegis.api.validation.Validations.notNullSpecification;
-import static de.gupta.validation.aegis.api.validation.Validations.trimmedStringSpecification;
+import static de.gupta.validation.aegis.api.validation.factories.ObjectValidations.notNullSpecification;
+import static de.gupta.validation.aegis.api.validation.factories.StringValidations.trimmedStringSpecification;
 
 public final class TaskModelValidationSupplier<T extends TaskModel> implements Supplier<Validation<T>>
 {
