@@ -1,7 +1,9 @@
 package de.gupta.clean.crud.implementation.examples.task.domain.model;
 
+import de.gupta.clean.crud.implementation.examples.task.domain.model.validation.TaskModelValidationSupplier;
 import de.gupta.clean.crud.template.domain.model.builder.ModelBuilder;
 import de.gupta.clean.crud.template.domain.model.validation.Validatable;
+import de.gupta.validation.aegis.api.validator.ValidatorFactory;
 
 import java.util.Optional;
 
@@ -14,6 +16,7 @@ public interface TaskModel extends Validatable
 	@Override
 	default void validate()
 	{
+		ValidatorFactory.fromValidationSupplier(TaskModelValidationSupplier.create()).validate(this);
 	}
 
 	interface TaskModelBuilder<M extends TaskModel, B extends TaskModelBuilder<M, B>> extends ModelBuilder<M>

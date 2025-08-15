@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Example Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <option name="ACTIVE_PROFILES" value="swagger" />
-    <module name="cleanCrud-implementation" />
+      <module name="cleanCrud-sampleImplementation"/>
     <selectedOptions>
       <option name="environmentVariables" />
     </selectedOptions>

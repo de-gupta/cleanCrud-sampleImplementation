@@ -1,7 +1,7 @@
 package de.gupta.clean.crud.implementation.examples.task.domain.service.crud;
 
 import de.gupta.clean.crud.implementation.examples.task.domain.model.TaskDomainModel;
-import de.gupta.clean.crud.template.domain.model.exceptions.ResourceCannotBePatchedException;
+import de.gupta.clean.crud.template.domain.model.exceptions.resource.ResourceCannotBePatchedException;
 import de.gupta.clean.crud.template.domain.service.crud.policy.ChangePolicy;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +15,5 @@ final class TaskChangePolicy implements ChangePolicy<TaskDomainModel>
 		{
 			throw ResourceCannotBePatchedException.withMessage("An important task cannot be made unimportant");
 		}
-
 	}
 }
