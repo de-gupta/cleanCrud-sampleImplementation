@@ -58,8 +58,7 @@ final class TaskDomainModelImpl implements TaskDomainModel
 		}
 
 		@Override
-		public TaskDomainModelBuilder withDescription(
-				final Optional<String> description)
+		public TaskDomainModelBuilder withDescription(final Optional<String> description)
 		{
 			description.ifPresent(d -> model.description = d);
 			return this;
