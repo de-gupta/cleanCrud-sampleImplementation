@@ -811,7 +811,7 @@ class TaskSpringRestControllerITCase
 	void shouldHandleLongDataWithinLimits() throws Exception
 	{
 		// Create a title that's long but within database column limit (255 characters)
-		String longTitle = "Long title ".repeat(10);
+		String longTitle = "Long title".repeat(10);
 
 		// Verify the title is long but within limits
 		assertThat(longTitle.length())

@@ -295,7 +295,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	@DisplayName("Should handle long data within database limits")
 	void shouldHandleLongDataWithinLimits() throws Exception
 	{
-		String longTitle = "Long title ".repeat(10);
+		String longTitle = "Long title".repeat(10);
 
 		assertThat(longTitle.length())
 				.as("Test title should be long but within database column limits")
