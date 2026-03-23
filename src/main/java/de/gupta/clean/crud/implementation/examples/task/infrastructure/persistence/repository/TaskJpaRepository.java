@@ -1,5 +1,6 @@
 package de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.repository;
 
+import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.model.TaskPersistenceModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +13,11 @@ import java.util.UUID;
 @Repository
 public interface TaskJpaRepository extends JpaRepository<TaskPersistenceModelImpl, UUID>
 {
+	default Collection<TaskPersistenceModel> findAllAsPersistenceModels()
+	{
+		return findAll().stream().map(TaskPersistenceModel.class::cast).toList();
+	}
+
 	boolean existsByTitle(final String title);
 
 	@Query("SELECT t.title FROM TaskPersistenceModelImpl t WHERE t.title IN :titles")

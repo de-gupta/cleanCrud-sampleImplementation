@@ -694,9 +694,9 @@ class TaskSpringRestControllerITCase
 	void shouldHandleMalformedIdInPath() throws Exception
 	{
 		// Try to use a non-numeric ID in the URL path
-		// The API returns 500 for type mismatch errors rather than 400
+		// Spring now returns 400 for path-variable type mismatch.
 		mockMvc.perform(get("/task/{id}", "not-a-number"))
-			   .andExpect(status().isInternalServerError());
+			   .andExpect(status().isBadRequest());
 	}
 
 	@Test

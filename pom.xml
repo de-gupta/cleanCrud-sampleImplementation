@@ -11,12 +11,11 @@
     <url>https://github.com/de-gupta/cleanCrud-sampleImplementation.git</url>
 
     <properties>
-        <maven.compiler.source>24</maven.compiler.source>
-        <maven.compiler.target>24</maven.compiler.target>
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <spring.boot.version>3.5.3</spring.boot.version>
-        <cleanCrud.version>0.0.11</cleanCrud.version>
+        <spring.boot.version>3.5.12</spring.boot.version>
+        <cleanCrud.version>0.2.1</cleanCrud.version>
         <aegis.version>0.0.4</aegis.version>
 
         <springdoc.openapi.version>2.8.9</springdoc.openapi.version>
