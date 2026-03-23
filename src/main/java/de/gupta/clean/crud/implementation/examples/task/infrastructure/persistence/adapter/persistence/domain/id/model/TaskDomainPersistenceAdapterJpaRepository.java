@@ -5,15 +5,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface TaskDomainPersistenceAdapterJpaRepository
-		extends JpaRepository<TaskDomainPersistenceAdapterModel, Long>
+		extends JpaRepository<TaskDomainPersistenceAdapterModel, UUID>
 {
 	boolean existsByDomainID(final Long domainID);
+
+	Optional<TaskDomainPersistenceAdapterModel> findOneByDomainID(Long domainID);
+
+	Optional<TaskDomainPersistenceAdapterModel> findOneByPersistenceID(UUID persistenceID);
 
 	@Query("""
 			SELECT m.domainID
@@ -22,10 +26,4 @@ public interface TaskDomainPersistenceAdapterJpaRepository
 			"""
 	)
 	Collection<Long> findExistingDomainIDsFrom(@Param("domainIDs") final Collection<Long> domainIDs);
-
-	Collection<TaskDomainPersistenceAdapterModel> findAllByDomainIDAndValidFromIsBeforeAndValidToIsAfter(
-			final Long domainID, final Instant validFrom, final Instant validTo);
-
-	Collection<TaskDomainPersistenceAdapterModel> findAllByPersistenceIDAndValidFromIsBeforeAndValidToIsAfter(
-			final UUID persistenceID, final Instant validFrom, final Instant validTo);
 }

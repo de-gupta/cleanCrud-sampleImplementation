@@ -5,8 +5,8 @@ import de.gupta.clean.crud.template.infrastructure.persistence.adapter.persisten
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -30,17 +30,15 @@ final class TaskDomainPersistenceAdapterRepository
 	}
 
 	@Override
-	protected Collection<TaskDomainPersistenceAdapterModel> findAllByPersistenceIDAndValidFromIsBeforeAndValidToIsAfter(
-			final UUID uuid, final Instant validFrom, final Instant validTo)
+	protected Optional<TaskDomainPersistenceAdapterModel> findOneByPersistenceID(final UUID uuid)
 	{
-		return jpaRepository.findAllByPersistenceIDAndValidFromIsBeforeAndValidToIsAfter(uuid, validFrom, validTo);
+		return jpaRepository.findOneByPersistenceID(uuid);
 	}
 
 	@Override
-	protected Collection<TaskDomainPersistenceAdapterModel> findAllByDomainIDAndValidFromIsBeforeAndValidToIsAfter(
-			final Long domainID, final Instant validFrom, final Instant validTo)
+	protected Optional<TaskDomainPersistenceAdapterModel> findOneByDomainID(final Long domainID)
 	{
-		return jpaRepository.findAllByDomainIDAndValidFromIsBeforeAndValidToIsAfter(domainID, validFrom, validTo);
+		return jpaRepository.findOneByDomainID(domainID);
 	}
 
 	TaskDomainPersistenceAdapterRepository(final TaskDomainPersistenceAdapterJpaRepository jpaRepository)
