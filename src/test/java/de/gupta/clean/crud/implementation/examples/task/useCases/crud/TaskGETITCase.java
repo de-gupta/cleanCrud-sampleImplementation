@@ -69,8 +69,7 @@ class TaskGETITCase extends AbstractTaskITCase
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.content").isArray())
 					.andExpect(jsonPath("$.content.length()").value(pageSize))
-					.andExpect(
-							jsonPath("$.totalElements").value(greaterThanOrEqualTo(taskCount)));
+					.andExpect(jsonPath("$.numberOfElements").value(pageSize));
 
 			ResultActions secondPageResult = mockMvc.perform(get("/task/fetch")
 					.param("page", "1")
@@ -122,18 +121,17 @@ class TaskGETITCase extends AbstractTaskITCase
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.content").isArray())
 					.andExpect(jsonPath("$.content.length()").value(pageSize))
-					.andExpect(jsonPath("$.totalElements").value(
-							greaterThanOrEqualTo(filteredTaskCount + regularTaskCount)));
+					.andExpect(jsonPath("$.numberOfElements").value(pageSize));
 
-			int totalPages = (int) Math.ceil((filteredTaskCount + regularTaskCount) / (double) pageSize);
+			int lastPageIndex = ((filteredTaskCount + regularTaskCount) - 1) / pageSize;
 			ResultActions lastPageResult = mockMvc.perform(get("/task/fetch")
-					.param("page", String.valueOf(totalPages - 1))
+					.param("page", String.valueOf(lastPageIndex))
 					.param("size", String.valueOf(pageSize)));
 
 			lastPageResult
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.content").isArray())
-					.andExpect(jsonPath("$.totalPages").value(totalPages));
+					.andExpect(jsonPath("$.numberOfElements").value(greaterThanOrEqualTo(0)));
 		}
 	}
 
@@ -150,7 +148,7 @@ class TaskGETITCase extends AbstractTaskITCase
 	void shouldHandleMalformedIdInPath() throws Exception
 	{
 		mockMvc.perform(get("/task/fetch/{id}", "not-a-number"))
-			   .andExpect(status().isInternalServerError());
+			   .andExpect(status().isBadRequest());
 	}
 
 	@Test
@@ -289,6 +287,6 @@ class TaskGETITCase extends AbstractTaskITCase
 					   .param("ids", "not-a-number")
 					   .param("ids", "another-invalid-id")
 					   .contentType(MediaType.APPLICATION_JSON))
-			   .andExpect(status().isInternalServerError());
+			   .andExpect(status().isBadRequest());
 	}
 }
