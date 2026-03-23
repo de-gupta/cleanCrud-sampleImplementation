@@ -41,6 +41,12 @@ final class TaskDomainPersistenceAdapterRepository
 		return jpaRepository.findOneByDomainID(domainID);
 	}
 
+	@Override
+	protected Collection<TaskDomainPersistenceAdapterModel> findAllByDomainIDIn(final Collection<Long> domainIDs)
+	{
+		return jpaRepository.findAllByDomainIDIn(domainIDs);
+	}
+
 	TaskDomainPersistenceAdapterRepository(final TaskDomainPersistenceAdapterJpaRepository jpaRepository)
 	{
 		super(jpaRepository);

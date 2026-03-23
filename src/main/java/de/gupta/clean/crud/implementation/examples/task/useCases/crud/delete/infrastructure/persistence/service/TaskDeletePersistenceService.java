@@ -2,6 +2,8 @@ package de.gupta.clean.crud.implementation.examples.task.useCases.crud.delete.in
 
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.model.TaskPersistenceModel;
 import de.gupta.clean.crud.template.infrastructure.persistence.adapter.persistence.domain.id.adapter.DomainPersistenceIDAdapter;
+import de.gupta.clean.crud.template.infrastructure.persistence.adapter.persistence.domain.id.adapter.DomainPersistenceIDManagement;
+import de.gupta.clean.crud.template.infrastructure.persistence.transaction.PersistenceTransactionRunner;
 import de.gupta.clean.crud.template.useCases.crud.delete.application.service.DeletePersistenceService;
 import de.gupta.clean.crud.template.useCases.crud.delete.infrastructure.persistence.service.AbstractDeletePersistenceService;
 import de.gupta.clean.crud.template.useCases.crud.delete.infrastructure.persistence.service.DeletePersistenceModelRepository;
@@ -19,8 +21,10 @@ final class TaskDeletePersistenceService extends AbstractDeletePersistenceServic
 	TaskDeletePersistenceService(
 			final FetchPersistenceModelRepository<TaskPersistenceModel, UUID> fetchRepository,
 			@Qualifier("taskDeletePersistenceModelRepository") final DeletePersistenceModelRepository<UUID> deleteRepository,
-			@Qualifier("taskDomainPersistenceIDAdapter") final DomainPersistenceIDAdapter<Long, UUID> idAdapter)
+			@Qualifier("taskDomainPersistenceIDAdapter") final DomainPersistenceIDAdapter<Long, UUID> idAdapter,
+			@Qualifier("taskDomainPersistenceIDManagement") final DomainPersistenceIDManagement<Long, UUID> idManagement,
+			final PersistenceTransactionRunner transactionRunner)
 	{
-		super(fetchRepository, deleteRepository, idAdapter);
+		super(fetchRepository, deleteRepository, idAdapter, idManagement, transactionRunner);
 	}
 }

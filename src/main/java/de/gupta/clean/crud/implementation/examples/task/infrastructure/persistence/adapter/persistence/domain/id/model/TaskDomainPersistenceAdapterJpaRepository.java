@@ -19,6 +19,8 @@ public interface TaskDomainPersistenceAdapterJpaRepository
 
 	Optional<TaskDomainPersistenceAdapterModel> findOneByPersistenceID(UUID persistenceID);
 
+	Collection<TaskDomainPersistenceAdapterModel> findAllByDomainIDIn(Collection<Long> domainIDs);
+
 	@Query("""
 			SELECT m.domainID
 			FROM TaskDomainPersistenceAdapterModel m
