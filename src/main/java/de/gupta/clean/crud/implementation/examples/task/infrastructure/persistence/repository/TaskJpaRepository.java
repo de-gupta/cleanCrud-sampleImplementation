@@ -18,8 +18,6 @@ public interface TaskJpaRepository extends JpaRepository<TaskPersistenceModelImp
 		return findAll().stream().map(TaskPersistenceModel.class::cast).toList();
 	}
 
-	boolean existsByTitle(final String title);
-
 	@Query("SELECT t.title FROM TaskPersistenceModelImpl t WHERE t.title IN :titles")
 	List<String> findTitlesByTitleIn(@Param("titles") final Collection<String> titles);
 }

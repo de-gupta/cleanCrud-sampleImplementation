@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Component
-public class TaskPersistenceHistorySnapshotFactory
+public final class TaskPersistenceHistorySnapshotFactory
 		extends AbstractPersistenceHistorySnapshotFactory<UUID, TaskPersistenceModel, TaskPersistenceModelHistory>
 		implements TriTemporalHistorySnapshotFactory<UUID, TaskPersistenceModel, TaskPersistenceModelHistory>
 {
