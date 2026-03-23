@@ -3,6 +3,7 @@ package de.gupta.clean.crud.implementation.examples.task.infrastructure.persiste
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.model.TaskPersistenceModel;
 import de.gupta.clean.crud.template.infrastructure.persistence.history.model.AbstractTriTemporalHistoryModel;
 import de.gupta.clean.crud.template.infrastructure.persistence.history.model.TemporalChangeType;
+import de.gupta.clean.crud.template.infrastructure.persistence.history.model.TriTemporalHistoryModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -17,7 +18,8 @@ import java.util.UUID;
 				@Index(name = "task_persistence_history_idx_entity_id", columnList = "entity_id"),
 				@Index(name = "task_persistence_history_idx_validity", columnList = "valid_from, valid_to")
 		})
-class TaskPersistenceModelHistory extends AbstractTriTemporalHistoryModel<UUID>
+public class TaskPersistenceModelHistory extends AbstractTriTemporalHistoryModel<UUID> implements
+		TriTemporalHistoryModel<UUID>
 {
 	@Column(nullable = false)
 	private String title;

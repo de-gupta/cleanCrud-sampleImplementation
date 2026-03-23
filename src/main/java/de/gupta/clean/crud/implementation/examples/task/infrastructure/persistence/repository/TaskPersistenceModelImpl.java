@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "task_persistence_model")
-class TaskPersistenceModelImpl implements TaskPersistenceModel
+public class TaskPersistenceModelImpl implements TaskPersistenceModel
 {
 	@Id
 	@GeneratedValue

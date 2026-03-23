@@ -2,6 +2,7 @@ package de.gupta.clean.crud.implementation.examples.task.infrastructure.persiste
 
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.model.TaskPersistenceModel;
 import de.gupta.clean.crud.template.infrastructure.persistence.history.adapter.AbstractPersistenceHistorySnapshotFactory;
+import de.gupta.clean.crud.template.infrastructure.persistence.history.adapter.TriTemporalHistorySnapshotFactory;
 import de.gupta.clean.crud.template.infrastructure.persistence.history.model.TemporalChangeType;
 import org.springframework.stereotype.Component;
 
@@ -9,8 +10,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Component
-final class TaskPersistenceHistorySnapshotFactory
+class TaskPersistenceHistorySnapshotFactory
 		extends AbstractPersistenceHistorySnapshotFactory<UUID, TaskPersistenceModel, TaskPersistenceModelHistory>
+		implements TriTemporalHistorySnapshotFactory<UUID, TaskPersistenceModel, TaskPersistenceModelHistory>
 {
 	@Override
 	protected TaskPersistenceModelHistory snapshotOf(
