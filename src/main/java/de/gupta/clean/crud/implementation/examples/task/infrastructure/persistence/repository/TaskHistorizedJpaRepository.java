@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Component
 @Qualifier("taskDeletePersistenceModelRepository")
-final class TaskHistorizedJpaRepository
+class TaskHistorizedJpaRepository
 		extends AbstractHistorizedPersistenceModelJpaRepository<TaskPersistenceModel, UUID, TaskPersistenceModelImpl,
 		TaskPersistenceModelHistory>
 		implements PersistenceModelCrudRepository<TaskPersistenceModel, UUID>,
