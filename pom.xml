@@ -16,7 +16,7 @@
 
         <spring.boot.version>3.5.12</spring.boot.version>
 
-        <cleanCrud.version>0.2.2-SNAPSHOT</cleanCrud.version>
+        <cleanCrud.version>0.3.0</cleanCrud.version>
         <aegis.version>0.0.4</aegis.version>
 
         <springdoc.openapi.version>2.8.9</springdoc.openapi.version>
