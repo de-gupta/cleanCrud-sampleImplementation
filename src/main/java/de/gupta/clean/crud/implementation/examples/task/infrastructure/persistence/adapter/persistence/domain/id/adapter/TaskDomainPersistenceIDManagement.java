@@ -8,6 +8,7 @@ import de.gupta.clean.crud.template.infrastructure.persistence.adapter.persisten
 import de.gupta.clean.crud.template.infrastructure.persistence.adapter.persistence.domain.id.adapter.DomainPersistenceIDManagement;
 import de.gupta.clean.crud.template.infrastructure.persistence.adapter.persistence.domain.id.repository.DomainPersistenceAdapterRepository;
 import de.gupta.clean.crud.template.infrastructure.persistence.adapter.persistence.domain.id.service.DomainIDGenerator;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -21,7 +22,7 @@ final class TaskDomainPersistenceIDManagement
 	TaskDomainPersistenceIDManagement(
 			final DomainPersistenceAdapterRepository<Long, UUID, TaskDomainPersistenceAdapterModel> repository,
 			final TaskDomainPersistenceAdapterHistoryJpaRepository historyRepository,
-			final DomainIDGenerator<Long> domainIDGenerator)
+			@Qualifier("taskLongDomainIDGenerator") final DomainIDGenerator<Long> domainIDGenerator)
 	{
 		super(repository,
 				BuilderFactories.of(TaskDomainPersistenceAdapterModel::builder),
