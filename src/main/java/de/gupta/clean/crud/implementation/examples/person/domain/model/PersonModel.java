@@ -1,5 +1,6 @@
 package de.gupta.clean.crud.implementation.examples.person.domain.model;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface PersonModel<U, V>
@@ -13,4 +14,6 @@ public interface PersonModel<U, V>
 	String firstName();
 
 	Optional<String> lastName();
+
+	LocalDate birthDate();
 }
