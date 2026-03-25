@@ -4,6 +4,7 @@ import de.gupta.clean.crud.implementation.examples.task.domain.model.TaskDomainM
 import de.gupta.clean.crud.template.domain.service.constraints.AbstractDomainConstraintService;
 import de.gupta.clean.crud.template.domain.service.constraints.DomainConstraintService;
 import de.gupta.clean.crud.template.domain.service.constraints.ExistingModelsConstraintService;
+import de.gupta.clean.crud.template.domain.service.equality.DuplicateDefinition;
 import de.gupta.clean.crud.template.domain.service.equality.DuplicateInsertionMessage;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +16,11 @@ final class TaskDomainConstraintService extends AbstractDomainConstraintService<
 		implements DomainConstraintService<TaskDomainModel>
 {
 	TaskDomainConstraintService(
+			final DuplicateDefinition<TaskDomainModel> duplicateDefinition,
 			final DuplicateInsertionMessage<TaskDomainModel> duplicateInsertionMessage,
 			final ExistingModelsConstraintService<TaskDomainModel> existingModelsConstraintService,
 			final Supplier<Collection<TaskDomainModel>> existingModelsSupplier)
 	{
-		super(duplicateInsertionMessage, existingModelsConstraintService, existingModelsSupplier);
+		super(duplicateDefinition, duplicateInsertionMessage, existingModelsConstraintService, existingModelsSupplier);
 	}
 }
