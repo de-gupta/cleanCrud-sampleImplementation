@@ -92,7 +92,7 @@ public class TaskPersistenceModelImpl implements TaskPersistenceModel
 		@Override
 		public TaskPersistenceModelBuilder withDescription(final Optional<String> description)
 		{
-			description.ifPresent(d -> model.description = d);
+			model.description = description.orElse(null);
 			return this;
 		}
 
