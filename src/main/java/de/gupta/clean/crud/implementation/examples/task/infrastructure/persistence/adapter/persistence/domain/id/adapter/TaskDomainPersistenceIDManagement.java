@@ -1,7 +1,7 @@
 package de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.adapter.persistence.domain.id.adapter;
 
-import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.adapter.persistence.domain.id.model.TaskDomainPersistenceAdapterHistoryJpaRepository;
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.adapter.persistence.domain.id.model.TaskDomainPersistenceAdapterHistoryModel;
+import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.adapter.persistence.domain.id.model.TaskDomainPersistenceAdapterHistoryRepository;
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.adapter.persistence.domain.id.model.TaskDomainPersistenceAdapterModel;
 import de.gupta.clean.crud.template.domain.model.builder.BuilderFactories;
 import de.gupta.clean.crud.template.infrastructure.persistence.adapter.persistence.domain.id.adapter.AbstractDomainPersistenceIDManagement;
@@ -22,7 +22,7 @@ final class TaskDomainPersistenceIDManagement
 {
 	TaskDomainPersistenceIDManagement(
 			final DomainPersistenceAdapterRepository<Long, UUID, TaskDomainPersistenceAdapterModel> repository,
-			final TaskDomainPersistenceAdapterHistoryJpaRepository historyRepository,
+			final TaskDomainPersistenceAdapterHistoryRepository historyRepository,
 			@Qualifier("taskLongDomainIDGenerator") final DomainIDGenerator<Long> domainIDGenerator,
 			@Qualifier("taskAuditActorSupplier") final AuditActorSupplier auditActorSupplier)
 	{

@@ -18,7 +18,7 @@ final class TaskPersistenceModelJpaUpdateRepository
 {
 	public TaskPersistenceModelJpaUpdateRepository(
 			final TaskJpaRepository jpaRepository,
-			final TaskPersistenceModelHistoryJpaRepository historyRepository,
+			final TaskPersistenceModelHistoryRepository historyRepository,
 			final TaskPersistenceHistorySnapshotFactory snapshotFactory,
 			@Qualifier("taskAuditActorSupplier") final AuditActorSupplier auditActorSupplier)
 	{

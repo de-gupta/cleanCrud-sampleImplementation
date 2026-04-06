@@ -3,7 +3,7 @@ package de.gupta.clean.crud.implementation.examples.task.useCases.crud.delete.in
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.model.TaskPersistenceModel;
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.repository.TaskJpaRepository;
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.repository.TaskPersistenceModelHistory;
-import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.repository.TaskPersistenceModelHistoryJpaRepository;
+import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.repository.TaskPersistenceModelHistoryRepository;
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.repository.TaskPersistenceModelImpl;
 import de.gupta.clean.crud.template.infrastructure.persistence.history.adapter.TriTemporalHistorySnapshotFactory;
 import de.gupta.clean.crud.template.infrastructure.persistence.history.service.AuditActorSupplier;
@@ -23,7 +23,7 @@ class TaskPersistenceModelJpaDeleteRepository
 {
 	TaskPersistenceModelJpaDeleteRepository(
 			final TaskJpaRepository jpaRepository,
-			final TaskPersistenceModelHistoryJpaRepository historyRepository,
+			final TaskPersistenceModelHistoryRepository historyRepository,
 			final TriTemporalHistorySnapshotFactory<UUID, TaskPersistenceModel, TaskPersistenceModelHistory> snapshotFactory,
 			final @Qualifier("taskAuditActorSupplier") AuditActorSupplier auditActorSupplier)
 	{
