@@ -6,6 +6,7 @@ import de.gupta.clean.crud.implementation.examples.task.infrastructure.persisten
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.repository.TaskPersistenceModelHistoryJpaRepository;
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.repository.TaskPersistenceModelImpl;
 import de.gupta.clean.crud.template.infrastructure.persistence.history.adapter.TriTemporalHistorySnapshotFactory;
+import de.gupta.clean.crud.template.infrastructure.persistence.history.service.AuditActorSupplier;
 import de.gupta.clean.crud.template.useCases.crud.delete.infrastructure.persistence.repository.AbstractPersistenceModelJpaDeleteRepository;
 import de.gupta.clean.crud.template.useCases.crud.delete.infrastructure.persistence.service.DeletePersistenceModelRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,8 +24,9 @@ class TaskPersistenceModelJpaDeleteRepository
 	TaskPersistenceModelJpaDeleteRepository(
 			final TaskJpaRepository jpaRepository,
 			final TaskPersistenceModelHistoryJpaRepository historyRepository,
-			final TriTemporalHistorySnapshotFactory<UUID, TaskPersistenceModel, TaskPersistenceModelHistory> snapshotFactory)
+			final TriTemporalHistorySnapshotFactory<UUID, TaskPersistenceModel, TaskPersistenceModelHistory> snapshotFactory,
+			final @Qualifier("taskAuditActorSupplier") AuditActorSupplier auditActorSupplier)
 	{
-		super(jpaRepository, historyRepository, snapshotFactory);
+		super(jpaRepository, historyRepository, snapshotFactory, auditActorSupplier);
 	}
 }

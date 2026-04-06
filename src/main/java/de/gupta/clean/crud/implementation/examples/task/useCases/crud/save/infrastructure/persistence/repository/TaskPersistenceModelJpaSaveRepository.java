@@ -6,14 +6,16 @@ import de.gupta.clean.crud.implementation.examples.task.infrastructure.persisten
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.repository.TaskPersistenceModelHistoryJpaRepository;
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.repository.TaskPersistenceModelImpl;
 import de.gupta.clean.crud.template.infrastructure.persistence.history.adapter.TriTemporalHistorySnapshotFactory;
+import de.gupta.clean.crud.template.infrastructure.persistence.history.service.AuditActorSupplier;
 import de.gupta.clean.crud.template.useCases.crud.save.infrastructure.persistence.repository.AbstractPersistenceModelJpaSaveRepository;
 import de.gupta.clean.crud.template.useCases.crud.save.infrastructure.persistence.service.SavePersistenceModelRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
-class TaskPersistenceModelJpaSaveRepository
+final class TaskPersistenceModelJpaSaveRepository
 		extends AbstractPersistenceModelJpaSaveRepository<TaskPersistenceModel, UUID, TaskPersistenceModelImpl,
 		TaskPersistenceModelHistory>
 		implements SavePersistenceModelRepository<TaskPersistenceModel>
@@ -21,8 +23,9 @@ class TaskPersistenceModelJpaSaveRepository
 	TaskPersistenceModelJpaSaveRepository(
 			final TaskJpaRepository jpaRepository,
 			final TaskPersistenceModelHistoryJpaRepository historyRepository,
-			final TriTemporalHistorySnapshotFactory<UUID, TaskPersistenceModel, TaskPersistenceModelHistory> snapshotFactory)
+			final TriTemporalHistorySnapshotFactory<UUID, TaskPersistenceModel, TaskPersistenceModelHistory> snapshotFactory,
+			@Qualifier("taskAuditActorSupplier") final AuditActorSupplier auditActorSupplier)
 	{
-		super(jpaRepository, historyRepository, snapshotFactory);
+		super(jpaRepository, historyRepository, snapshotFactory, auditActorSupplier);
 	}
 }
