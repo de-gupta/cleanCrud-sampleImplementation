@@ -18,7 +18,7 @@ class TaskDELETEITCase extends AbstractTaskITCase
 	@DisplayName("Should delete a task by ID")
 	void shouldDeleteTaskById() throws Exception
 	{
-		TaskAPIModelCreate taskToCreate = new TaskAPIModelCreate(uniqueTaskTitle("Task to delete"), Optional.empty());
+		TaskAPIModelCreate taskToCreate = TaskAPIModelCreate.of(uniqueTaskTitle("Task to delete"), Optional.empty());
 		TaskAPIModelResponse createdTask = createTask(taskToCreate);
 
 		mockMvc.perform(delete("/task/delete/{id}", createdTask.id()))

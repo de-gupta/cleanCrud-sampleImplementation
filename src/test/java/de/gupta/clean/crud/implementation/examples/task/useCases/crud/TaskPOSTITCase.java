@@ -63,7 +63,8 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	@DisplayName("Should handle POST with empty title")
 	void shouldHandlePostWithEmptyTitle() throws Exception
 	{
-		TaskAPIModelCreate emptyTitleTask = new TaskAPIModelCreate("", Optional.of("Description for empty title task"));
+		TaskAPIModelCreate emptyTitleTask = TaskAPIModelCreate.of("", Optional.of("Description for empty title " +
+				"task"));
 
 		mockMvc.perform(post("/task/save")
 					   .contentType(MediaType.APPLICATION_JSON)
@@ -100,7 +101,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 		assertThat(longDescription.length()).isGreaterThan(255);
 		System.out.println("Description length: " + longDescription.length());
 
-		TaskAPIModelCreate longDataTask = new TaskAPIModelCreate(
+		TaskAPIModelCreate longDataTask = TaskAPIModelCreate.of(
 				uniqueTaskTitle(longTitle),
 				Optional.of(longDescription)
 		);
@@ -132,7 +133,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 
 		for (int i = 0; i < requestCount; i++)
 		{
-			TaskAPIModelCreate taskToCreate = new TaskAPIModelCreate(
+			TaskAPIModelCreate taskToCreate = TaskAPIModelCreate.of(
 					uniqueTaskTitle("Sequential Task " + i),
 					Optional.of("Description for sequential task " + i)
 			);
@@ -190,7 +191,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 		String titleWithSpecialChars = "Special Chars: !@#$%^&*()_+{}|:<>?~`-=[]\\;',./\"";
 		String descWithUnicode = "Unicode: 你好, こんにちは, 안녕하세요, Привет, مرحبا, שלום";
 
-		TaskAPIModelCreate specialCharsTask = new TaskAPIModelCreate(
+		TaskAPIModelCreate specialCharsTask = TaskAPIModelCreate.of(
 				uniqueTaskTitle(titleWithSpecialChars),
 				Optional.of(descWithUnicode)
 		);
@@ -233,7 +234,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 				{
 					startLatch.await();
 
-					TaskAPIModelCreate taskToCreate = new TaskAPIModelCreate(
+					TaskAPIModelCreate taskToCreate = TaskAPIModelCreate.of(
 							uniqueTaskTitle("Concurrent Task " + index),
 							Optional.of("Description for concurrent task " + index)
 					);
@@ -302,7 +303,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 				.isGreaterThan(50)
 				.isLessThan(255);
 
-		TaskAPIModelCreate taskWithLongTitle = new TaskAPIModelCreate(
+		TaskAPIModelCreate taskWithLongTitle = TaskAPIModelCreate.of(
 				uniqueTaskTitle(longTitle),
 				Optional.of("Normal description")
 		);
@@ -336,7 +337,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 				.as("Test title should exceed database column limits")
 				.isGreaterThan(255);
 
-		TaskAPIModelCreate taskWithExtremelyLongTitle = new TaskAPIModelCreate(
+		TaskAPIModelCreate taskWithExtremelyLongTitle = TaskAPIModelCreate.of(
 				uniqueTaskTitle(extremelyLongTitle),
 				Optional.of("Normal description")
 		);
@@ -482,10 +483,10 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	private static Stream<Arguments> provideTasksForCreation()
 	{
 		return Stream.of(
-				Arguments.of("Basic task", new TaskAPIModelCreate(uniqueTaskTitle("Task 1"), Optional.empty())),
+				Arguments.of("Basic task", TaskAPIModelCreate.of(uniqueTaskTitle("Task 1"), Optional.empty())),
 				Arguments.of("Task with description",
-						new TaskAPIModelCreate(uniqueTaskTitle("Task 2"), Optional.of("Description for task 2"))),
-				Arguments.of("Task with long title", new TaskAPIModelCreate(
+						TaskAPIModelCreate.of(uniqueTaskTitle("Task 2"), Optional.of("Description for task 2"))),
+				Arguments.of("Task with long title", TaskAPIModelCreate.of(
 						uniqueTaskTitle(
 								"This is a task with a very long title that should still be processed correctly"),
 						Optional.empty()))
@@ -514,7 +515,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 							Optional<String> description = hasDescription
 									? Optional.of("Description for task " + i + ": " + random.nextInt(1000))
 									: Optional.empty();
-							return new TaskAPIModelCreate(uniqueTaskTitle(title), description);
+							return TaskAPIModelCreate.of(uniqueTaskTitle(title), description);
 						})
 						.collect(Collectors.toList());
 	}
@@ -548,7 +549,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 			int originalIndex = random.nextInt(count);
 			TaskAPIModelCreate originalTask = tasks.get(originalIndex);
 
-			TaskAPIModelCreate duplicateTask = new TaskAPIModelCreate(
+			TaskAPIModelCreate duplicateTask = TaskAPIModelCreate.of(
 					originalTask.title(),
 					originalTask.description()
 			);

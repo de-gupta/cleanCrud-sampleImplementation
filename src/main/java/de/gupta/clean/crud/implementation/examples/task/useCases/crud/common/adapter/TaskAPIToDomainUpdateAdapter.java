@@ -12,6 +12,10 @@ final class TaskAPIToDomainUpdateAdapter
 	@Override
 	public TaskDomainModelUpdatePatch mapToDomainModelUpdatePatch(final TaskAPIModelUpdatePatch apiModel)
 	{
-		return new TaskDomainModelUpdatePatch(apiModel.title(), apiModel.description());
+		return new TaskDomainModelUpdatePatch(
+				apiModel.title(),
+				apiModel.description(),
+				apiModel.versions(),
+				apiModel.removeVersionIds());
 	}
 }

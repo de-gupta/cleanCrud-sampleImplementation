@@ -4,6 +4,7 @@ import de.gupta.clean.crud.implementation.examples.task.domain.model.TaskModel;
 import de.gupta.clean.crud.template.domain.model.builder.ModelBuilder;
 import de.gupta.clean.crud.template.infrastructure.persistence.model.BasePersistenceModel;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface TaskPersistenceModel extends BasePersistenceModel<UUID>, TaskModel
@@ -12,9 +13,14 @@ public interface TaskPersistenceModel extends BasePersistenceModel<UUID>, TaskMo
 
 	void setDescription(String description);
 
+	Optional<Long> taskVersionId();
+
+	void setTaskVersionId(Long taskVersionId);
+
 	interface TaskPersistenceModelBuilder
 			extends TaskModelBuilder<TaskPersistenceModel, TaskPersistenceModelBuilder>,
 			ModelBuilder<TaskPersistenceModel>
 	{
+		TaskPersistenceModelBuilder withTaskVersionId(Optional<Long> taskVersionId);
 	}
 }

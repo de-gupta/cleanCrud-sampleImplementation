@@ -22,6 +22,8 @@ public class TaskPersistenceModelImpl implements TaskPersistenceModel
 	private String title;
 	@Column(columnDefinition = "TEXT")
 	private String description;
+	@Column
+	private Long taskVersionId;
 
 	static TaskPersistenceModelBuilder builder()
 	{
@@ -47,6 +49,12 @@ public class TaskPersistenceModelImpl implements TaskPersistenceModel
 	}
 
 	@Override
+	public Optional<Long> taskVersionId()
+	{
+		return Optional.ofNullable(taskVersionId);
+	}
+
+	@Override
 	public void setTitle(final String title)
 	{
 		this.title = title;
@@ -57,6 +65,13 @@ public class TaskPersistenceModelImpl implements TaskPersistenceModel
 	public void setDescription(final String description)
 	{
 		this.description = description;
+		this.validate();
+	}
+
+	@Override
+	public void setTaskVersionId(final Long taskVersionId)
+	{
+		this.taskVersionId = taskVersionId;
 		this.validate();
 	}
 
@@ -93,6 +108,13 @@ public class TaskPersistenceModelImpl implements TaskPersistenceModel
 		public TaskPersistenceModelBuilder withDescription(final Optional<String> description)
 		{
 			model.description = description.orElse(null);
+			return this;
+		}
+
+		@Override
+		public TaskPersistenceModelBuilder withTaskVersionId(final Optional<Long> taskVersionId)
+		{
+			model.taskVersionId = taskVersionId.orElse(null);
 			return this;
 		}
 

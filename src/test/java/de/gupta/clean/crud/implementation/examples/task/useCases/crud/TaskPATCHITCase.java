@@ -26,7 +26,7 @@ class TaskPATCHITCase extends AbstractTaskITCase
 	void shouldUpdateTaskWithPatch(String testCase, TaskAPIModelUpdatePatch updatePatch) throws Exception
 	{
 		TaskAPIModelCreate taskToCreate =
-				new TaskAPIModelCreate(uniqueTaskTitle("Original Task"), Optional.of("Original Description"));
+				TaskAPIModelCreate.of(uniqueTaskTitle("Original Task"), Optional.of("Original Description"));
 		TaskAPIModelResponse createdTask = createTask(taskToCreate);
 
 		var result = mockMvc.perform(patch("/task/update/{id}", createdTask.id())
@@ -69,7 +69,7 @@ class TaskPATCHITCase extends AbstractTaskITCase
 	@DisplayName("Should return 404 when patching non-existent task")
 	void shouldReturn404WhenPatchingNonExistentTask() throws Exception
 	{
-		TaskAPIModelUpdatePatch updatePatch = new TaskAPIModelUpdatePatch(
+		TaskAPIModelUpdatePatch updatePatch = TaskAPIModelUpdatePatch.of(
 				Optional.of("Updated Title"),
 				Optional.of("Updated Description")
 		);
@@ -85,10 +85,10 @@ class TaskPATCHITCase extends AbstractTaskITCase
 	void shouldHandleEmptyPatch() throws Exception
 	{
 		TaskAPIModelCreate taskToCreate =
-				new TaskAPIModelCreate(uniqueTaskTitle("Task for Empty Patch"), Optional.of("Original Description"));
+				TaskAPIModelCreate.of(uniqueTaskTitle("Task for Empty Patch"), Optional.of("Original Description"));
 		TaskAPIModelResponse createdTask = createTask(taskToCreate);
 
-		TaskAPIModelUpdatePatch emptyPatch = new TaskAPIModelUpdatePatch(Optional.empty(), Optional.empty());
+		TaskAPIModelUpdatePatch emptyPatch = TaskAPIModelUpdatePatch.of(Optional.empty(), Optional.empty());
 
 		var result = mockMvc.perform(patch("/task/update/{id}", createdTask.id())
 									.contentType(MediaType.APPLICATION_JSON)
@@ -113,7 +113,7 @@ class TaskPATCHITCase extends AbstractTaskITCase
 	void shouldHandlePatchWithLongData() throws Exception
 	{
 		TaskAPIModelCreate taskToCreate =
-				new TaskAPIModelCreate(uniqueTaskTitle("Task for Long Patch"), Optional.of("Original Description"));
+				TaskAPIModelCreate.of(uniqueTaskTitle("Task for Long Patch"), Optional.of("Original Description"));
 		TaskAPIModelResponse createdTask = createTask(taskToCreate);
 
 		String longTitle = "Long Title for PATCH: This is a longer title that tests the system's ability to handle " +
@@ -129,7 +129,7 @@ class TaskPATCHITCase extends AbstractTaskITCase
 		assertThat(longDescription.length()).isGreaterThan(255);
 		System.out.println("Description length: " + longDescription.length());
 
-		TaskAPIModelUpdatePatch longDataPatch = new TaskAPIModelUpdatePatch(
+		TaskAPIModelUpdatePatch longDataPatch = TaskAPIModelUpdatePatch.of(
 				Optional.of(longTitle),
 				Optional.of(longDescription)
 		);
@@ -156,11 +156,11 @@ class TaskPATCHITCase extends AbstractTaskITCase
 	{
 		return Stream.of(
 				Arguments.of("Update title only",
-						new TaskAPIModelUpdatePatch(Optional.of("Updated Title"), Optional.empty())),
+						TaskAPIModelUpdatePatch.of(Optional.of("Updated Title"), Optional.empty())),
 				Arguments.of("Update description only",
-						new TaskAPIModelUpdatePatch(Optional.empty(), Optional.of("Updated Description"))),
+						TaskAPIModelUpdatePatch.of(Optional.empty(), Optional.of("Updated Description"))),
 				Arguments.of("Update both fields",
-						new TaskAPIModelUpdatePatch(Optional.of("New Title"), Optional.of("New Description")))
+						TaskAPIModelUpdatePatch.of(Optional.of("New Title"), Optional.of("New Description")))
 		);
 	}
 }

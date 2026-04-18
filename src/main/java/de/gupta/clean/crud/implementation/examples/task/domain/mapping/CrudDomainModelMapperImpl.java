@@ -18,7 +18,10 @@ final class CrudDomainModelMapperImpl implements
 	@Override
 	public TaskDomainModelResponse toResponse(final TaskDomainModel taskDomainModel)
 	{
-		return TaskDomainModelResponse.fromDomainModel(taskDomainModel);
+		return new TaskDomainModelResponse(
+				taskDomainModel.title(),
+				taskDomainModel.description(),
+				taskDomainModel.versions());
 	}
 
 	@Override
@@ -27,6 +30,7 @@ final class CrudDomainModelMapperImpl implements
 		return modelBuilderFactory.builder()
 								  .withTitle(taskDomainModelCreate.title())
 								  .withDescription(taskDomainModelCreate.description())
+								  .withVersions(java.util.List.of())
 								  .build();
 	}
 
@@ -39,6 +43,7 @@ final class CrudDomainModelMapperImpl implements
 								  .withDescription(updatePatch.description().isPresent() ?
 										  updatePatch.description() :
 										  originalModel.description())
+								  .withVersions(originalModel.versions())
 								  .build();
 	}
 

@@ -23,11 +23,11 @@ class TaskPUTITCase extends AbstractTaskITCase
 	void shouldReplaceTaskWithPut() throws Exception
 	{
 		TaskAPIModelCreate originalTask =
-				new TaskAPIModelCreate(uniqueTaskTitle("Original Task"), Optional.of("Original Description"));
+				TaskAPIModelCreate.of(uniqueTaskTitle("Original Task"), Optional.of("Original Description"));
 		TaskAPIModelResponse createdTask = createTask(originalTask);
 
 		TaskAPIModelCreate replacementTask =
-				new TaskAPIModelCreate(uniqueTaskTitle("Replacement Task"), Optional.of("Replacement Description"));
+				TaskAPIModelCreate.of(uniqueTaskTitle("Replacement Task"), Optional.of("Replacement Description"));
 
 		mockMvc.perform(put("/task/update/{id}", createdTask.id())
 					   .contentType(MediaType.APPLICATION_JSON)
@@ -57,7 +57,7 @@ class TaskPUTITCase extends AbstractTaskITCase
 	void shouldHandlePutToNonExistentTask() throws Exception
 	{
 		TaskAPIModelCreate replacementTask =
-				new TaskAPIModelCreate(uniqueTaskTitle("Replacement for Non-existent Task"),
+				TaskAPIModelCreate.of(uniqueTaskTitle("Replacement for Non-existent Task"),
 						Optional.of("Replacement Description"));
 
 		mockMvc.perform(put("/task/update/{id}", 999999L)
@@ -75,7 +75,7 @@ class TaskPUTITCase extends AbstractTaskITCase
 	void shouldHandlePutWithLongData() throws Exception
 	{
 		TaskAPIModelCreate originalTask =
-				new TaskAPIModelCreate(uniqueTaskTitle("Original Task for Long PUT"),
+				TaskAPIModelCreate.of(uniqueTaskTitle("Original Task for Long PUT"),
 						Optional.of("Original Description"));
 		TaskAPIModelResponse createdTask = createTask(originalTask);
 
@@ -92,7 +92,7 @@ class TaskPUTITCase extends AbstractTaskITCase
 		assertThat(longDescription.length()).isGreaterThan(255);
 		System.out.println("Description length: " + longDescription.length());
 
-		TaskAPIModelCreate longDataReplacement = new TaskAPIModelCreate(
+		TaskAPIModelCreate longDataReplacement = TaskAPIModelCreate.of(
 				uniqueTaskTitle(longTitle),
 				Optional.of(longDescription)
 		);
@@ -123,7 +123,7 @@ class TaskPUTITCase extends AbstractTaskITCase
 	void shouldHandlePutWithEmptyFields() throws Exception
 	{
 		TaskAPIModelCreate originalTask =
-				new TaskAPIModelCreate(uniqueTaskTitle("Original Task for Empty PUT"),
+				TaskAPIModelCreate.of(uniqueTaskTitle("Original Task for Empty PUT"),
 						Optional.of("Original Description"));
 		TaskAPIModelResponse createdTask = createTask(originalTask);
 

@@ -1,17 +1,20 @@
 package de.gupta.clean.crud.implementation.examples.task.domain.model.dto;
 
 
-import de.gupta.clean.crud.implementation.examples.task.domain.model.TaskDomainModel;
+import de.gupta.clean.crud.implementation.examples.taskversion.useCases.crud.common.dto.TaskVersionAPIModelResponse;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public record TaskDomainModelResponse(
 		String title,
-		Optional<String> description
+		Optional<String> description,
+		Collection<TaskVersionAPIModelResponse> versions
 )
 {
-	public static TaskDomainModelResponse fromDomainModel(final TaskDomainModel taskDomainModel)
+	public TaskDomainModelResponse
 	{
-		return new TaskDomainModelResponse(taskDomainModel.title(), taskDomainModel.description());
+		versions = List.copyOf(versions);
 	}
 }

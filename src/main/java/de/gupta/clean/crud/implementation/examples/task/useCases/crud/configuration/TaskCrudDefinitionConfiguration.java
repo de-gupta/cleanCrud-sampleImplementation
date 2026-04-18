@@ -16,6 +16,7 @@ import de.gupta.clean.crud.template.useCases.crud.aggregate.builder.AggregateCru
 import de.gupta.clean.crud.template.useCases.crud.aggregate.definition.AggregateCrudDefinition;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateMutationPort;
+import de.gupta.clean.crud.template.useCases.crud.aggregate.relationship.AggregateRelationshipDefinition;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +36,8 @@ class TaskCrudDefinitionConfiguration
 			@Qualifier("taskPatchPolicy") final PatchPolicy<TaskDomainModel> patchPolicy,
 			@Qualifier("taskDeletionPolicy") final DeletionPolicy<TaskDomainModel> deletionPolicy,
 			@Qualifier("taskDomainSecurityPolicy") final DomainSecurityPolicy<TaskDomainModel> securityPolicy,
-			@Qualifier("taskDuplicateDefinition") final DuplicateDefinition<TaskDomainModel> duplicateDefinition)
+			@Qualifier("taskDuplicateDefinition") final DuplicateDefinition<TaskDomainModel> duplicateDefinition,
+			@Qualifier("taskTaskVersionRelationshipDefinition") final AggregateRelationshipDefinition<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch, ?, ?, ?, ?> taskTaskVersionRelationshipDefinition)
 	{
 		return AggregateCrudDefinitions.<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch, TaskDomainModelResponse>
 											   aggregateCrudDefinition()
@@ -49,6 +51,7 @@ class TaskCrudDefinitionConfiguration
 		                               .deletionPolicy(deletionPolicy)
 		                               .securityPolicy(securityPolicy)
 		                               .duplicateDefinition(duplicateDefinition)
+		                               .relationshipDefinition(taskTaskVersionRelationshipDefinition)
 		                               .build();
 	}
 }

@@ -24,7 +24,7 @@ class TaskGETITCase extends AbstractTaskITCase
 	@DisplayName("Should retrieve a task by ID")
 	void shouldRetrieveTaskById() throws Exception
 	{
-		TaskAPIModelCreate taskToCreate = new TaskAPIModelCreate("Task to retrieve",
+		TaskAPIModelCreate taskToCreate = TaskAPIModelCreate.of("Task to retrieve",
 				Optional.of("This task will be retrieved by ID"));
 		TaskAPIModelResponse createdTask = createTask(taskToCreate);
 
@@ -50,7 +50,7 @@ class TaskGETITCase extends AbstractTaskITCase
 
 		for (int i = 0; i < taskCount; i++)
 		{
-			TaskAPIModelCreate taskToCreate = new TaskAPIModelCreate(
+			TaskAPIModelCreate taskToCreate = TaskAPIModelCreate.of(
 					uniqueTaskTitle("Pagination Task " + i),
 					Optional.of("Description for pagination task " + i)
 			);
@@ -92,7 +92,7 @@ class TaskGETITCase extends AbstractTaskITCase
 
 		for (int i = 0; i < filteredTaskCount; i++)
 		{
-			createTask(new TaskAPIModelCreate(
+			createTask(TaskAPIModelCreate.of(
 					uniqueTaskTitle(filterKeyword + " Task " + i),
 					Optional.of("Description for filterable task " + i)
 			));
@@ -100,7 +100,7 @@ class TaskGETITCase extends AbstractTaskITCase
 
 		for (int i = 0; i < regularTaskCount; i++)
 		{
-			createTask(new TaskAPIModelCreate(
+			createTask(TaskAPIModelCreate.of(
 					uniqueTaskTitle("Regular Task " + i),
 					Optional.of("Description for regular task " + i)
 			));
@@ -161,7 +161,7 @@ class TaskGETITCase extends AbstractTaskITCase
 
 		for (int i = 0; i < taskCount; i++)
 		{
-			TaskAPIModelCreate taskToCreate = new TaskAPIModelCreate(
+			TaskAPIModelCreate taskToCreate = TaskAPIModelCreate.of(
 					uniqueTaskTitle("Batch Fetch Task " + i),
 					Optional.of("Description for batch fetch task " + i)
 			);
@@ -213,7 +213,7 @@ class TaskGETITCase extends AbstractTaskITCase
 	void shouldHandleMixOfExistingAndNonExistentIds() throws Exception
 	{
 		// Create a task
-		TaskAPIModelCreate taskToCreate = new TaskAPIModelCreate(
+		TaskAPIModelCreate taskToCreate = TaskAPIModelCreate.of(
 				uniqueTaskTitle("Existing Task"),
 				Optional.of("This task exists")
 		);
