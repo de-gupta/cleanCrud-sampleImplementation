@@ -3,11 +3,11 @@ package de.gupta.clean.crud.implementation.examples.task.useCases.crud.configura
 import de.gupta.clean.crud.implementation.examples.task.domain.model.TaskDomainModel;
 import de.gupta.clean.crud.implementation.examples.task.domain.model.dto.TaskDomainModelCreate;
 import de.gupta.clean.crud.implementation.examples.task.domain.model.dto.TaskDomainModelUpdatePatch;
-import de.gupta.clean.crud.implementation.examples.taskversion.domain.model.TaskVersionDomainModel;
-import de.gupta.clean.crud.implementation.examples.taskversion.domain.model.dto.TaskVersionDomainModelCreate;
-import de.gupta.clean.crud.implementation.examples.taskversion.domain.model.dto.TaskVersionDomainModelResponse;
-import de.gupta.clean.crud.implementation.examples.taskversion.domain.model.dto.TaskVersionDomainModelUpdatePatch;
-import de.gupta.clean.crud.implementation.examples.taskversion.useCases.crud.common.dto.TaskVersionAPIModelResponse;
+import de.gupta.clean.crud.implementation.examples.version.domain.model.VersionDomainModel;
+import de.gupta.clean.crud.implementation.examples.version.domain.model.dto.VersionDomainModelCreate;
+import de.gupta.clean.crud.implementation.examples.version.domain.model.dto.VersionDomainModelResponse;
+import de.gupta.clean.crud.implementation.examples.version.domain.model.dto.VersionDomainModelUpdatePatch;
+import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelResponse;
 import de.gupta.clean.crud.template.domain.mapping.fetch.DomainResponseBuilder;
 import de.gupta.clean.crud.template.domain.model.builder.ModelBuilderFactory;
 import de.gupta.clean.crud.template.domain.model.exceptions.operation.InvalidRequestException;
@@ -32,8 +32,8 @@ import java.util.Optional;
 class TaskCrudRelationshipConfiguration
 {
 	@Bean
-	@Qualifier("taskTaskVersionLifecycleSemantics")
-	LifecycleSemantics taskTaskVersionLifecycleSemantics()
+	@Qualifier("versionLifecycleSemantics")
+	LifecycleSemantics versionLifecycleSemantics()
 	{
 		return LifecycleSemanticsBuilder.lifecycleSemantics()
 		                                .cascadeCreate()
@@ -45,33 +45,33 @@ class TaskCrudRelationshipConfiguration
 	}
 
 	@Bean
-	@Qualifier("taskTaskVersionCreateInputResolver")
-	SatelliteCreateInputResolver<TaskDomainModelCreate, Collection<SatelliteCreateIntent<Long, TaskVersionDomainModelCreate>>> taskTaskVersionCreateInputResolver()
+	@Qualifier("versionCreateInputResolver")
+	SatelliteCreateInputResolver<TaskDomainModelCreate, Collection<SatelliteCreateIntent<Long, VersionDomainModelCreate>>> versionCreateInputResolver()
 	{
 		return taskDomainModelCreate -> taskDomainModelCreate.versions()
 		                                                     .stream()
-		                                                     .<SatelliteCreateIntent<Long, TaskVersionDomainModelCreate>>map(
+		                                                     .<SatelliteCreateIntent<Long, VersionDomainModelCreate>>map(
 																	 version -> new SatelliteCreateIntent.InlineSatelliteCreateIntent<>(
-																			 TaskVersionDomainModelCreate.of(
+																			 VersionDomainModelCreate.of(
 																					 version.version())))
 		                                                     .toList();
 	}
 
 	@Bean
-	@Qualifier("taskTaskVersionPatchInputResolver")
-	SatellitePatchInputResolver<TaskDomainModelUpdatePatch, Collection<SatelliteMutationIntent<Long, TaskVersionDomainModelCreate, TaskVersionDomainModelUpdatePatch>>> taskTaskVersionPatchInputResolver()
+	@Qualifier("versionPatchInputResolver")
+	SatellitePatchInputResolver<TaskDomainModelUpdatePatch, Collection<SatelliteMutationIntent<Long, VersionDomainModelCreate, VersionDomainModelUpdatePatch>>> versionPatchInputResolver()
 	{
 		return taskDomainModelUpdatePatch ->
 		{
-			var intents = new ArrayList<SatelliteMutationIntent<Long, TaskVersionDomainModelCreate,
-					TaskVersionDomainModelUpdatePatch>>();
+			var intents = new ArrayList<SatelliteMutationIntent<Long, VersionDomainModelCreate,
+					VersionDomainModelUpdatePatch>>();
 			taskDomainModelUpdatePatch.versions().ifPresent(versions -> versions.forEach(version ->
 			{
 				if (version.id().isPresent())
 				{
 					intents.add(new SatelliteMutationIntent.UpdateSatelliteMutationIntent<>(
 							version.id().orElseThrow(),
-							TaskVersionDomainModelUpdatePatch.of(version.version())));
+							VersionDomainModelUpdatePatch.of(version.version())));
 					return;
 				}
 				if (version.version().isEmpty())
@@ -80,8 +80,8 @@ class TaskCrudRelationshipConfiguration
 							"An id-less version mutation requires a version payload");
 				}
 				intents.add(new SatelliteMutationIntent.UpsertCurrentSatelliteMutationIntent<>(
-						TaskVersionDomainModelCreate.of(version.version().orElseThrow()),
-						TaskVersionDomainModelUpdatePatch.of(version.version())));
+						VersionDomainModelCreate.of(version.version().orElseThrow()),
+						VersionDomainModelUpdatePatch.of(version.version())));
 			}));
 			taskDomainModelUpdatePatch.removeVersionIds().forEach(
 					versionId -> intents.add(new SatelliteMutationIntent.RemoveSatelliteMutationIntent<>(versionId)));
@@ -90,21 +90,21 @@ class TaskCrudRelationshipConfiguration
 	}
 
 	@Bean
-	@Qualifier("taskTaskVersionIdentityResolver")
-	SatelliteIdentityResolver<TaskDomainModel, TaskVersionDomainModel, Long> taskTaskVersionIdentityResolver()
+	@Qualifier("versionIdentityResolver")
+	SatelliteIdentityResolver<TaskDomainModel, VersionDomainModel, Long> versionIdentityResolver()
 	{
 		return (taskDomainModel, _) -> taskDomainModel.versions().stream()
 		                                              .findFirst()
-		                                              .map(TaskVersionAPIModelResponse::id);
+		                                              .map(VersionAPIModelResponse::id);
 	}
 
 	@Bean
-	@Qualifier("taskTaskVersionLinkStrategy")
-	SatelliteLinkStrategy<Long, TaskDomainModel, Long, TaskVersionDomainModel> taskTaskVersionLinkStrategy(
+	@Qualifier("versionLinkStrategy")
+	SatelliteLinkStrategy<Long, TaskDomainModel, Long, VersionDomainModel> versionLinkStrategy(
 			final ModelBuilderFactory<TaskDomainModel, TaskDomainModel.TaskDomainModelBuilder> taskDomainModelBuilderFactory,
-			@Qualifier("taskVersionAggregateFetchPort") final de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort<Long, TaskVersionDomainModel> taskVersionAggregateFetchPort,
-			@Qualifier("taskVersionDomainResponseBuilder") final DomainResponseBuilder<TaskVersionDomainModel, TaskVersionDomainModelResponse> taskVersionDomainResponseBuilder,
-			@Qualifier("taskVersionDomainToAPIResponseAdapter") final DomainToAPIResponseAdapter<TaskVersionAPIModelResponse, Long, TaskVersionDomainModelResponse> taskVersionDomainToAPIResponseAdapter)
+			@Qualifier("versionAggregateFetchPort") final de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort<Long, VersionDomainModel> versionAggregateFetchPort,
+			@Qualifier("versionDomainResponseBuilder") final DomainResponseBuilder<VersionDomainModel, VersionDomainModelResponse> versionDomainResponseBuilder,
+			@Qualifier("versionDomainToAPIResponseAdapter") final DomainToAPIResponseAdapter<VersionAPIModelResponse, Long, VersionDomainModelResponse> versionDomainToAPIResponseAdapter)
 	{
 		return new SatelliteLinkStrategy<>()
 		{
@@ -117,13 +117,13 @@ class TaskCrudRelationshipConfiguration
 			@Override
 			public Optional<Long> currentLinkedSatelliteDomainId(final TaskDomainModel taskDomainModel)
 			{
-				return taskDomainModel.versions().stream().findFirst().map(TaskVersionAPIModelResponse::id);
+				return taskDomainModel.versions().stream().findFirst().map(VersionAPIModelResponse::id);
 			}
 
 			@Override
 			public Collection<Long> currentLinkedSatelliteDomainIds(final TaskDomainModel taskDomainModel)
 			{
-				return taskDomainModel.versions().stream().map(TaskVersionAPIModelResponse::id).toList();
+				return taskDomainModel.versions().stream().map(VersionAPIModelResponse::id).toList();
 			}
 
 			@Override
@@ -135,27 +135,27 @@ class TaskCrudRelationshipConfiguration
 						taskDomainModelBuilderFactory,
 						taskDomainModel,
 						satelliteDomainIds.stream()
-						                  .map(taskVersionId -> toTaskVersionResponse(
-												  taskVersionAggregateFetchPort,
-												  taskVersionDomainResponseBuilder,
-												  taskVersionDomainToAPIResponseAdapter,
-												  taskVersionId))
+						                  .map(versionId -> toVersionResponse(
+												  versionAggregateFetchPort,
+												  versionDomainResponseBuilder,
+												  versionDomainToAPIResponseAdapter,
+												  versionId))
 						                  .toList());
 			}
 
 			@Override
 			public TaskDomainModel attachHydratedSatellites(
 					final TaskDomainModel taskDomainModel,
-					final Collection<IdentifiedModel<Long, TaskVersionDomainModel>> satellites)
+					final Collection<IdentifiedModel<Long, VersionDomainModel>> satellites)
 			{
-				var taskVersion = satellites.stream().findFirst();
+				var hydratedVersion = satellites.stream().findFirst();
 				return rebuildTaskDomainModel(
 						taskDomainModelBuilderFactory,
 						taskDomainModel,
-						taskVersion.map(version -> taskVersionDomainToAPIResponseAdapter.mapToAPIModelResponse(
+						hydratedVersion.map(version -> versionDomainToAPIResponseAdapter.mapToAPIModelResponse(
 										   IdentifiedModel.of(
 												   version.id(),
-												   taskVersionDomainResponseBuilder.toResponse(version.model()))))
+												   versionDomainResponseBuilder.toResponse(version.model()))))
 						           .stream()
 						           .toList());
 			}
@@ -163,8 +163,8 @@ class TaskCrudRelationshipConfiguration
 	}
 
 	@Bean
-	@Qualifier("taskTaskVersionHydrationStrategy")
-	SatelliteHydrationStrategy<Long, TaskDomainModel, Long, TaskVersionDomainModel> taskTaskVersionHydrationStrategy()
+	@Qualifier("versionHydrationStrategy")
+	SatelliteHydrationStrategy<Long, TaskDomainModel, Long, VersionDomainModel> versionHydrationStrategy()
 	{
 		return (task, satelliteFetchPort, satelliteLinkStrategy) -> satelliteLinkStrategy.currentLinkedSatelliteDomainIds(
 																								 task.model())
@@ -175,35 +175,35 @@ class TaskCrudRelationshipConfiguration
 		                                                                                 .collect(
 																								 java.util.stream.Collectors.collectingAndThen(
 																										 java.util.stream.Collectors.toList(),
-																										 taskVersions ->
-																												 taskVersions.isEmpty()
+																										 versions ->
+																												 versions.isEmpty()
 																														 ?
 																														 task.model()
 																														 :
 																														 satelliteLinkStrategy.attachHydratedSatellites(
 																																 task.model(),
-																																 taskVersions)));
+																																 versions)));
 	}
 
 	@Bean
-	@Qualifier("taskTaskVersionRelationshipDefinition")
-	AggregateRelationshipDefinition<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch, Long, TaskVersionDomainModel, TaskVersionDomainModelCreate, TaskVersionDomainModelUpdatePatch> taskTaskVersionRelationshipDefinition(
-			@Qualifier("taskTaskVersionLifecycleSemantics") final LifecycleSemantics lifecycleSemantics,
-			@Qualifier("taskVersionAggregateCrudDefinition") final AggregateCrudDefinition<Long, TaskVersionDomainModel, TaskVersionDomainModelCreate, TaskVersionDomainModelUpdatePatch,
-					TaskVersionDomainModelResponse> taskVersionAggregateCrudDefinition,
-			@Qualifier("taskTaskVersionCreateInputResolver") final SatelliteCreateInputResolver<TaskDomainModelCreate, Collection<SatelliteCreateIntent<Long, TaskVersionDomainModelCreate>>> createInputResolver,
-			@Qualifier("taskTaskVersionPatchInputResolver") final SatellitePatchInputResolver<TaskDomainModelUpdatePatch, Collection<SatelliteMutationIntent<Long, TaskVersionDomainModelCreate,
-					TaskVersionDomainModelUpdatePatch>>> patchInputResolver,
-			@Qualifier("taskTaskVersionIdentityResolver") final SatelliteIdentityResolver<TaskDomainModel, TaskVersionDomainModel, Long> identityResolver,
-			@Qualifier("taskTaskVersionLinkStrategy") final SatelliteLinkStrategy<Long, TaskDomainModel, Long, TaskVersionDomainModel> linkStrategy,
-			@Qualifier("taskTaskVersionHydrationStrategy") final SatelliteHydrationStrategy<Long, TaskDomainModel, Long, TaskVersionDomainModel> hydrationStrategy)
+	@Qualifier("versionRelationshipDefinition")
+	AggregateRelationshipDefinition<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch, Long, VersionDomainModel, VersionDomainModelCreate, VersionDomainModelUpdatePatch> versionRelationshipDefinition(
+			@Qualifier("versionLifecycleSemantics") final LifecycleSemantics lifecycleSemantics,
+			@Qualifier("versionAggregateCrudDefinition") final AggregateCrudDefinition<Long, VersionDomainModel, VersionDomainModelCreate, VersionDomainModelUpdatePatch,
+					VersionDomainModelResponse> versionAggregateCrudDefinition,
+			@Qualifier("versionCreateInputResolver") final SatelliteCreateInputResolver<TaskDomainModelCreate, Collection<SatelliteCreateIntent<Long, VersionDomainModelCreate>>> createInputResolver,
+			@Qualifier("versionPatchInputResolver") final SatellitePatchInputResolver<TaskDomainModelUpdatePatch, Collection<SatelliteMutationIntent<Long, VersionDomainModelCreate,
+					VersionDomainModelUpdatePatch>>> patchInputResolver,
+			@Qualifier("versionIdentityResolver") final SatelliteIdentityResolver<TaskDomainModel, VersionDomainModel, Long> identityResolver,
+			@Qualifier("versionLinkStrategy") final SatelliteLinkStrategy<Long, TaskDomainModel, Long, VersionDomainModel> linkStrategy,
+			@Qualifier("versionHydrationStrategy") final SatelliteHydrationStrategy<Long, TaskDomainModel, Long, VersionDomainModel> hydrationStrategy)
 	{
 		return AggregateRelationshipDefinitions
-				.<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch, Long, TaskVersionDomainModel, TaskVersionDomainModelCreate, TaskVersionDomainModelUpdatePatch>aggregateRelationshipDefinition()
+				.<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch, Long, VersionDomainModel, VersionDomainModelCreate, VersionDomainModelUpdatePatch>aggregateRelationshipDefinition()
 				.name("version")
 				.cardinality(Cardinality.ONE)
 				.lifecycleSemantics(lifecycleSemantics)
-				.satelliteDefinition(taskVersionAggregateCrudDefinition)
+				.satelliteDefinition(versionAggregateCrudDefinition)
 				.createInputResolver(createInputResolver)
 				.patchInputResolver(patchInputResolver)
 				.identityResolver(identityResolver)
@@ -216,7 +216,7 @@ class TaskCrudRelationshipConfiguration
 	private TaskDomainModel rebuildTaskDomainModel(
 			final ModelBuilderFactory<TaskDomainModel, TaskDomainModel.TaskDomainModelBuilder> taskDomainModelBuilderFactory,
 			final TaskDomainModel taskDomainModel,
-			final Collection<TaskVersionAPIModelResponse> versions)
+			final Collection<VersionAPIModelResponse> versions)
 	{
 		return taskDomainModelBuilderFactory.builder()
 		                                    .withTitle(taskDomainModel.title())
@@ -225,19 +225,19 @@ class TaskCrudRelationshipConfiguration
 		                                    .build();
 	}
 
-	private TaskVersionAPIModelResponse toTaskVersionResponse(
-			final de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort<Long, TaskVersionDomainModel> taskVersionAggregateFetchPort,
-			final DomainResponseBuilder<TaskVersionDomainModel, TaskVersionDomainModelResponse> taskVersionDomainResponseBuilder,
-			final DomainToAPIResponseAdapter<TaskVersionAPIModelResponse, Long, TaskVersionDomainModelResponse> taskVersionDomainToAPIResponseAdapter,
-			final Long taskVersionId)
+	private VersionAPIModelResponse toVersionResponse(
+			final de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort<Long, VersionDomainModel> versionAggregateFetchPort,
+			final DomainResponseBuilder<VersionDomainModel, VersionDomainModelResponse> versionDomainResponseBuilder,
+			final DomainToAPIResponseAdapter<VersionAPIModelResponse, Long, VersionDomainModelResponse> versionDomainToAPIResponseAdapter,
+			final Long versionId)
 	{
-		var taskVersionDomainModel = taskVersionAggregateFetchPort.findById(taskVersionId)
+		var versionDomainModel = versionAggregateFetchPort.findById(versionId)
 		                                                          .orElseThrow(
 																		  () -> de.gupta.clean.crud.template.domain.model.exceptions.resource.ResourceNotFoundException.withId(
-																				  taskVersionId));
-		return taskVersionDomainToAPIResponseAdapter.mapToAPIModelResponse(
+																				  versionId));
+		return versionDomainToAPIResponseAdapter.mapToAPIModelResponse(
 				IdentifiedModel.of(
-						taskVersionDomainModel.id(),
-						taskVersionDomainResponseBuilder.toResponse(taskVersionDomainModel.model())));
+						versionDomainModel.id(),
+						versionDomainResponseBuilder.toResponse(versionDomainModel.model())));
 	}
 }

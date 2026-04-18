@@ -2,9 +2,9 @@ package de.gupta.clean.crud.implementation.examples.task.infrastructure.persiste
 
 import de.gupta.clean.crud.implementation.examples.task.domain.model.TaskDomainModel;
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.model.TaskPersistenceModel;
-import de.gupta.clean.crud.implementation.examples.taskversion.domain.model.TaskVersionDomainModel;
-import de.gupta.clean.crud.implementation.examples.taskversion.domain.model.dto.TaskVersionDomainModelResponse;
-import de.gupta.clean.crud.implementation.examples.taskversion.useCases.crud.common.dto.TaskVersionAPIModelResponse;
+import de.gupta.clean.crud.implementation.examples.version.domain.model.VersionDomainModel;
+import de.gupta.clean.crud.implementation.examples.version.domain.model.dto.VersionDomainModelResponse;
+import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelResponse;
 import de.gupta.clean.crud.template.domain.mapping.fetch.DomainResponseBuilder;
 import de.gupta.clean.crud.template.domain.model.builder.ModelBuilderFactory;
 import de.gupta.clean.crud.template.domain.model.identified.IdentifiedModel;
@@ -22,11 +22,11 @@ final class TaskDomainPersistenceModelAdapter
 			domainModelBuilderFactory;
 	private final ModelBuilderFactory<TaskPersistenceModel, TaskPersistenceModel.TaskPersistenceModelBuilder>
 			persistenceModelBuilderFactory;
-	private final AggregateFetchPort<Long, TaskVersionDomainModel> taskVersionAggregateFetchPort;
-	private final DomainResponseBuilder<TaskVersionDomainModel, TaskVersionDomainModelResponse>
-			taskVersionDomainResponseBuilder;
-	private final DomainToAPIResponseAdapter<TaskVersionAPIModelResponse, Long, TaskVersionDomainModelResponse>
-			taskVersionDomainToAPIResponseAdapter;
+	private final AggregateFetchPort<Long, VersionDomainModel> versionAggregateFetchPort;
+	private final DomainResponseBuilder<VersionDomainModel, VersionDomainModelResponse>
+			versionDomainResponseBuilder;
+	private final DomainToAPIResponseAdapter<VersionAPIModelResponse, Long, VersionDomainModelResponse>
+			versionDomainToAPIResponseAdapter;
 
 	@Override
 	public TaskPersistenceModel toPersistenceModel(final TaskDomainModel domainModel)
@@ -34,8 +34,8 @@ final class TaskDomainPersistenceModelAdapter
 		return persistenceModelBuilderFactory.builder()
 											 .withTitle(domainModel.title())
 											 .withDescription(domainModel.description())
-											 .withTaskVersionId(domainModel.versions().stream().findFirst()
-											                               .map(TaskVersionAPIModelResponse::id))
+											 .withVersionId(domainModel.versions().stream().findFirst()
+											                           .map(VersionAPIModelResponse::id))
 											 .build();
 	}
 
@@ -46,7 +46,7 @@ final class TaskDomainPersistenceModelAdapter
 										.withTitle(persistenceModel.title())
 										.withDescription(persistenceModel.description())
 										.withVersions(
-												persistenceModel.taskVersionId().flatMap(this::taskVersion).stream()
+												persistenceModel.versionId().flatMap(this::version).stream()
 												                .toList())
 										.build();
 	}
@@ -57,33 +57,33 @@ final class TaskDomainPersistenceModelAdapter
 	{
 		persistenceModel.setTitle(domainModel.title());
 		persistenceModel.setDescription(domainModel.description().orElse(null));
-		persistenceModel.setTaskVersionId(
-				domainModel.versions().stream().findFirst().map(TaskVersionAPIModelResponse::id).orElse(null));
+		persistenceModel.setVersionId(
+				domainModel.versions().stream().findFirst().map(VersionAPIModelResponse::id).orElse(null));
 
 		return persistenceModel;
 	}
 
-	private java.util.Optional<TaskVersionAPIModelResponse> taskVersion(final Long taskVersionId)
+	private java.util.Optional<VersionAPIModelResponse> version(final Long versionId)
 	{
-		return taskVersionAggregateFetchPort.findById(taskVersionId)
-		                                    .map(taskVersionDomainModel -> IdentifiedModel.of(
-													taskVersionId,
-													taskVersionDomainResponseBuilder.toResponse(
-															taskVersionDomainModel.model())))
-		                                    .map(taskVersionDomainToAPIResponseAdapter::mapToAPIModelResponse);
+		return versionAggregateFetchPort.findById(versionId)
+		                                .map(versionDomainModel -> IdentifiedModel.of(
+												versionId,
+												versionDomainResponseBuilder.toResponse(
+														versionDomainModel.model())))
+		                                .map(versionDomainToAPIResponseAdapter::mapToAPIModelResponse);
 	}
 
 	TaskDomainPersistenceModelAdapter(
 			final ModelBuilderFactory<TaskDomainModel, TaskDomainModel.TaskDomainModelBuilder> domainModelBuilderFactory,
 			final ModelBuilderFactory<TaskPersistenceModel, TaskPersistenceModel.TaskPersistenceModelBuilder> persistenceModelBuilderFactory,
-			@Qualifier("taskVersionAggregateFetchPort") final AggregateFetchPort<Long, TaskVersionDomainModel> taskVersionAggregateFetchPort,
-			@Qualifier("taskVersionDomainResponseBuilder") final DomainResponseBuilder<TaskVersionDomainModel, TaskVersionDomainModelResponse> taskVersionDomainResponseBuilder,
-			@Qualifier("taskVersionDomainToAPIResponseAdapter") final DomainToAPIResponseAdapter<TaskVersionAPIModelResponse, Long, TaskVersionDomainModelResponse> taskVersionDomainToAPIResponseAdapter)
+			@Qualifier("versionAggregateFetchPort") final AggregateFetchPort<Long, VersionDomainModel> versionAggregateFetchPort,
+			@Qualifier("versionDomainResponseBuilder") final DomainResponseBuilder<VersionDomainModel, VersionDomainModelResponse> versionDomainResponseBuilder,
+			@Qualifier("versionDomainToAPIResponseAdapter") final DomainToAPIResponseAdapter<VersionAPIModelResponse, Long, VersionDomainModelResponse> versionDomainToAPIResponseAdapter)
 	{
 		this.domainModelBuilderFactory = domainModelBuilderFactory;
 		this.persistenceModelBuilderFactory = persistenceModelBuilderFactory;
-		this.taskVersionAggregateFetchPort = taskVersionAggregateFetchPort;
-		this.taskVersionDomainResponseBuilder = taskVersionDomainResponseBuilder;
-		this.taskVersionDomainToAPIResponseAdapter = taskVersionDomainToAPIResponseAdapter;
+		this.versionAggregateFetchPort = versionAggregateFetchPort;
+		this.versionDomainResponseBuilder = versionDomainResponseBuilder;
+		this.versionDomainToAPIResponseAdapter = versionDomainToAPIResponseAdapter;
 	}
 }

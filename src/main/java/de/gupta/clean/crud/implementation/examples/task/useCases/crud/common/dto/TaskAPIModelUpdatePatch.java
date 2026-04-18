@@ -1,6 +1,6 @@
 package de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto;
 
-import de.gupta.clean.crud.implementation.examples.taskversion.useCases.crud.common.dto.TaskVersionAPIModelUpdatePatch;
+import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelUpdatePatch;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.Optional;
 public record TaskAPIModelUpdatePatch(
 		Optional<String> title,
 		Optional<String> description,
-		Optional<Collection<TaskVersionAPIModelUpdatePatch>> versions,
+		Optional<Collection<VersionAPIModelUpdatePatch>> versions,
 		Collection<Long> removeVersionIds
 )
 {
@@ -19,7 +19,7 @@ public record TaskAPIModelUpdatePatch(
 	}
 
 	public static TaskAPIModelUpdatePatch of(final Optional<String> title, final Optional<String> description,
-	                                         final Optional<Collection<TaskVersionAPIModelUpdatePatch>> versions,
+	                                         final Optional<Collection<VersionAPIModelUpdatePatch>> versions,
 	                                         final Collection<Long> removeVersionIds)
 	{
 		return new TaskAPIModelUpdatePatch(title, description, versions, removeVersionIds);

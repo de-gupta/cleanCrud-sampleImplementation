@@ -13,14 +13,14 @@ public interface TaskPersistenceModel extends BasePersistenceModel<UUID>, TaskMo
 
 	void setDescription(String description);
 
-	Optional<Long> taskVersionId();
+	Optional<Long> versionId();
 
-	void setTaskVersionId(Long taskVersionId);
+	void setVersionId(Long versionId);
 
 	interface TaskPersistenceModelBuilder
 			extends TaskModelBuilder<TaskPersistenceModel, TaskPersistenceModelBuilder>,
 			ModelBuilder<TaskPersistenceModel>
 	{
-		TaskPersistenceModelBuilder withTaskVersionId(Optional<Long> taskVersionId);
+		TaskPersistenceModelBuilder withVersionId(Optional<Long> versionId);
 	}
 }

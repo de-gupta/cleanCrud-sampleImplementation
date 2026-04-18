@@ -1,6 +1,6 @@
 package de.gupta.clean.crud.implementation.examples.task.domain.model;
 
-import de.gupta.clean.crud.implementation.examples.taskversion.useCases.crud.common.dto.TaskVersionAPIModelResponse;
+import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelResponse;
 import de.gupta.clean.crud.template.domain.model.builder.AbstractModelBuilder;
 
 import java.util.Collection;
@@ -11,7 +11,7 @@ final class TaskDomainModelImpl implements TaskDomainModel
 {
 	private String title;
 	private String description;
-	private Collection<TaskVersionAPIModelResponse> versions;
+	private Collection<VersionAPIModelResponse> versions;
 
 	static TaskDomainModelBuilder builder()
 	{
@@ -31,7 +31,7 @@ final class TaskDomainModelImpl implements TaskDomainModel
 	}
 
 	@Override
-	public Collection<TaskVersionAPIModelResponse> versions()
+	public Collection<VersionAPIModelResponse> versions()
 	{
 		return versions == null ? List.of() : List.copyOf(versions);
 	}
@@ -75,7 +75,7 @@ final class TaskDomainModelImpl implements TaskDomainModel
 		}
 
 		@Override
-		public TaskDomainModelBuilder withVersions(final Collection<TaskVersionAPIModelResponse> versions)
+		public TaskDomainModelBuilder withVersions(final Collection<VersionAPIModelResponse> versions)
 		{
 			model.versions = List.copyOf(versions);
 			return this;

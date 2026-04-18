@@ -1,6 +1,6 @@
 package de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto;
 
-import de.gupta.clean.crud.implementation.examples.taskversion.useCases.crud.common.dto.TaskVersionAPIModelResponse;
+import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelResponse;
 
 import java.util.Collection;
 import java.util.List;
@@ -10,14 +10,14 @@ public record TaskAPIModelResponse(
 		Long id,
 		String title,
 		Optional<String> description,
-		Collection<TaskVersionAPIModelResponse> versions
+		Collection<VersionAPIModelResponse> versions
 )
 {
 	public static TaskAPIModelResponse of(
 			final long id,
 			final String title,
 			final Optional<String> description,
-			final Collection<TaskVersionAPIModelResponse> versions)
+			final Collection<VersionAPIModelResponse> versions)
 	{
 		return new TaskAPIModelResponse(id, title, description, versions);
 	}
