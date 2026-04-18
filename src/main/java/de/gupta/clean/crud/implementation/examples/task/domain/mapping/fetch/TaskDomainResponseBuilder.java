@@ -15,6 +15,7 @@ final class TaskDomainResponseBuilder implements
 		return new TaskDomainModelResponse(
 				taskDomainModel.title(),
 				taskDomainModel.description(),
-				taskDomainModel.versions());
+				taskDomainModel.versions(),
+				taskDomainModel.notes());
 	}
 }

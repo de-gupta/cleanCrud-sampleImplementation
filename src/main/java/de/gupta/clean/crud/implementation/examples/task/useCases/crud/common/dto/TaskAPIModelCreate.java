@@ -1,5 +1,6 @@
 package de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto;
 
+import de.gupta.clean.crud.implementation.examples.note.useCases.crud.common.dto.NoteAPIModelCreate;
 import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelCreate;
 import jakarta.validation.constraints.NotBlank;
 
@@ -11,23 +12,32 @@ public record TaskAPIModelCreate(
 		@NotBlank(message = "Title is required")
 		String title,
 		Optional<String> description,
-		Collection<VersionAPIModelCreate> versions
+		Collection<VersionAPIModelCreate> versions,
+		Collection<NoteAPIModelCreate> notes
 )
 {
 	public static TaskAPIModelCreate of(final String title, final Optional<String> description,
+	                                    final Collection<VersionAPIModelCreate> versions,
+	                                    final Collection<NoteAPIModelCreate> notes)
+	{
+		return new TaskAPIModelCreate(title, description, versions, notes);
+	}
+
+	public static TaskAPIModelCreate of(final String title, final Optional<String> description,
 	                                    final Collection<VersionAPIModelCreate> versions)
 	{
-		return new TaskAPIModelCreate(title, description, versions);
+		return of(title, description, versions, List.of());
 	}
 
 	public static TaskAPIModelCreate of(final String title, final Optional<String> description)
 	{
-		return of(title, description, List.of());
+		return of(title, description, List.of(), List.of());
 	}
 
 	public TaskAPIModelCreate
 	{
 		description = Optional.ofNullable(description).orElse(Optional.empty());
 		versions = versions == null ? List.of() : List.copyOf(versions);
+		notes = notes == null ? List.of() : List.copyOf(notes);
 	}
 }

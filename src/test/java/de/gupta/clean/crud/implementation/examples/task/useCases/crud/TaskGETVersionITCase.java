@@ -53,7 +53,7 @@ class TaskGETVersionITCase extends AbstractTaskVersionITCase
 				List.of(new VersionAPIModelCreate(initialVersion))));
 		var linkedVersion = createdTask.versions().stream().findFirst().orElseThrow();
 
-		var versionPatch = new VersionAPIModelUpdatePatch(Optional.empty(), Optional.of(updatedVersion));
+		var versionPatch = VersionAPIModelUpdatePatch.of(Optional.of(updatedVersion));
 
 		mockMvc.perform(patch("/version/update/{id}", linkedVersion.id())
 					   .contentType(MediaType.APPLICATION_JSON)

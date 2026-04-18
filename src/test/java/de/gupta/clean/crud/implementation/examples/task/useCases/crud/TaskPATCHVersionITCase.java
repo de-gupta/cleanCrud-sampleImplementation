@@ -2,6 +2,7 @@ package de.gupta.clean.crud.implementation.examples.task.useCases.crud;
 
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelCreate;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelUpdatePatch;
+import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskVersionAPIModelUpdatePatchItem;
 import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelCreate;
 import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelResponse;
 import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelUpdatePatch;
@@ -42,8 +43,9 @@ class TaskPATCHVersionITCase extends AbstractTaskVersionITCase
 				TaskAPIModelUpdatePatch.of(
 						Optional.empty(),
 						Optional.empty(),
-						Optional.of(List.of(new VersionAPIModelUpdatePatch(Optional.empty(),
-								Optional.of(upsertCase.updatedVersionValue())))),
+						Optional.of(List.of(TaskVersionAPIModelUpdatePatchItem.of(
+								Optional.empty(),
+								VersionAPIModelUpdatePatch.of(Optional.of(upsertCase.updatedVersionValue()))))),
 						List.of()));
 
 		assertThat(patchedTask.versions())
@@ -108,8 +110,10 @@ class TaskPATCHVersionITCase extends AbstractTaskVersionITCase
 				Optional.empty(),
 				Optional.empty(),
 				Optional.of(List.of(
-						new VersionAPIModelUpdatePatch(Optional.empty(), Optional.of(nextVersionValue())),
-						new VersionAPIModelUpdatePatch(Optional.empty(), Optional.of(nextVersionValue())))),
+						TaskVersionAPIModelUpdatePatchItem.of(Optional.empty(),
+								VersionAPIModelUpdatePatch.of(Optional.of(nextVersionValue()))),
+						TaskVersionAPIModelUpdatePatchItem.of(Optional.empty(),
+								VersionAPIModelUpdatePatch.of(Optional.of(nextVersionValue()))))),
 				List.of());
 
 		mockMvc.perform(patch("/task/update/{id}", createdTask.id())

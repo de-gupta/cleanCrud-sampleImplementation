@@ -14,6 +14,7 @@ final class TaskAPIToDomainCreateAdapter implements APIToDomainCreateAdapter<Tas
 		return new TaskDomainModelCreate(
 				apiModel.title(),
 				apiModel.description(),
-				apiModel.versions());
+				apiModel.versions(),
+				apiModel.notes());
 	}
 }

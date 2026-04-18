@@ -1,5 +1,10 @@
 package de.gupta.clean.crud.implementation.examples.task.useCases.crud.configuration;
 
+import de.gupta.clean.crud.implementation.examples.note.domain.model.NoteDomainModel;
+import de.gupta.clean.crud.implementation.examples.note.domain.model.dto.NoteDomainModelCreate;
+import de.gupta.clean.crud.implementation.examples.note.domain.model.dto.NoteDomainModelResponse;
+import de.gupta.clean.crud.implementation.examples.note.domain.model.dto.NoteDomainModelUpdatePatch;
+import de.gupta.clean.crud.implementation.examples.note.useCases.crud.common.dto.NoteAPIModelResponse;
 import de.gupta.clean.crud.implementation.examples.task.domain.model.TaskDomainModel;
 import de.gupta.clean.crud.implementation.examples.task.domain.model.dto.TaskDomainModelCreate;
 import de.gupta.clean.crud.implementation.examples.task.domain.model.dto.TaskDomainModelUpdatePatch;
@@ -18,6 +23,7 @@ import de.gupta.clean.crud.template.useCases.crud.aggregate.definition.Aggregate
 import de.gupta.clean.crud.template.useCases.crud.aggregate.intent.SatelliteCreateIntent;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.intent.SatelliteMutationIntent;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.lifecycle.LifecycleSemantics;
+import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.relationship.*;
 import de.gupta.clean.crud.template.useCases.crud.common.adapter.model.DomainToAPIResponseAdapter;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,13 +41,14 @@ class TaskCrudRelationshipConfiguration
 	@Qualifier("versionLifecycleSemantics")
 	LifecycleSemantics versionLifecycleSemantics()
 	{
-		return LifecycleSemanticsBuilder.lifecycleSemantics()
-		                                .cascadeCreate()
-		                                .cascadeUpdate()
-		                                .cascadeDelete()
-		                                .orphanDelete()
-		                                .hydrateOnFetch()
-		                                .build();
+		return fullLifecycleSemantics();
+	}
+
+	@Bean
+	@Qualifier("noteLifecycleSemantics")
+	LifecycleSemantics noteLifecycleSemantics()
+	{
+		return fullLifecycleSemantics();
 	}
 
 	@Bean
@@ -53,7 +60,19 @@ class TaskCrudRelationshipConfiguration
 		                                                     .<SatelliteCreateIntent<Long, VersionDomainModelCreate>>map(
 																	 version -> new SatelliteCreateIntent.InlineSatelliteCreateIntent<>(
 																			 VersionDomainModelCreate.of(
-																					 version.version())))
+								                                                     version.version())))
+		                                                     .toList();
+	}
+
+	@Bean
+	@Qualifier("noteCreateInputResolver")
+	SatelliteCreateInputResolver<TaskDomainModelCreate, Collection<SatelliteCreateIntent<Long, NoteDomainModelCreate>>> noteCreateInputResolver()
+	{
+		return taskDomainModelCreate -> taskDomainModelCreate.notes()
+		                                                     .stream()
+		                                                     .<SatelliteCreateIntent<Long, NoteDomainModelCreate>>map(
+																	 note -> new SatelliteCreateIntent.InlineSatelliteCreateIntent<>(
+																			 NoteDomainModelCreate.of(note.note())))
 		                                                     .toList();
 	}
 
@@ -71,20 +90,56 @@ class TaskCrudRelationshipConfiguration
 				{
 					intents.add(new SatelliteMutationIntent.UpdateSatelliteMutationIntent<>(
 							version.id().orElseThrow(),
-							VersionDomainModelUpdatePatch.of(version.version())));
+							VersionDomainModelUpdatePatch.of(version.patch().version())));
 					return;
 				}
-				if (version.version().isEmpty())
+				if (version.patch().version().isEmpty())
 				{
 					throw InvalidRequestException.withMessage(
 							"An id-less version mutation requires a version payload");
 				}
 				intents.add(new SatelliteMutationIntent.UpsertCurrentSatelliteMutationIntent<>(
-						VersionDomainModelCreate.of(version.version().orElseThrow()),
-						VersionDomainModelUpdatePatch.of(version.version())));
+						VersionDomainModelCreate.of(version.patch().version().orElseThrow()),
+						VersionDomainModelUpdatePatch.of(version.patch().version())));
 			}));
 			taskDomainModelUpdatePatch.removeVersionIds().forEach(
 					versionId -> intents.add(new SatelliteMutationIntent.RemoveSatelliteMutationIntent<>(versionId)));
+			return intents;
+		};
+	}
+
+	@Bean
+	@Qualifier("notePatchInputResolver")
+	SatellitePatchInputResolver<TaskDomainModelUpdatePatch, Collection<SatelliteMutationIntent<Long, NoteDomainModelCreate, NoteDomainModelUpdatePatch>>> notePatchInputResolver()
+	{
+		return taskDomainModelUpdatePatch ->
+		{
+			var intents = new ArrayList<SatelliteMutationIntent<Long, NoteDomainModelCreate,
+					NoteDomainModelUpdatePatch>>();
+			taskDomainModelUpdatePatch.notes().ifPresent(notes -> notes.forEach(note ->
+			{
+				if (note.id().isPresent())
+				{
+					if (note.patch().note().isEmpty())
+					{
+						throw InvalidRequestException.withMessage(
+								"A note update with an id requires a note payload");
+					}
+					intents.add(new SatelliteMutationIntent.UpdateSatelliteMutationIntent<>(
+							note.id().orElseThrow(),
+							NoteDomainModelUpdatePatch.of(note.patch().note())));
+					return;
+				}
+				if (note.patch().note().isEmpty())
+				{
+					throw InvalidRequestException.withMessage(
+							"An id-less note mutation requires a note payload");
+				}
+				intents.add(new SatelliteMutationIntent.CreateSatelliteMutationIntent<>(
+						NoteDomainModelCreate.of(note.patch().note().orElseThrow())));
+			}));
+			taskDomainModelUpdatePatch.removeNoteIds().forEach(
+					noteId -> intents.add(new SatelliteMutationIntent.RemoveSatelliteMutationIntent<>(noteId)));
 			return intents;
 		};
 	}
@@ -99,10 +154,17 @@ class TaskCrudRelationshipConfiguration
 	}
 
 	@Bean
+	@Qualifier("noteIdentityResolver")
+	SatelliteIdentityResolver<TaskDomainModel, NoteDomainModel, Long> noteIdentityResolver()
+	{
+		return (_, _) -> Optional.empty();
+	}
+
+	@Bean
 	@Qualifier("versionLinkStrategy")
 	SatelliteLinkStrategy<Long, TaskDomainModel, Long, VersionDomainModel> versionLinkStrategy(
 			final ModelBuilderFactory<TaskDomainModel, TaskDomainModel.TaskDomainModelBuilder> taskDomainModelBuilderFactory,
-			@Qualifier("versionAggregateFetchPort") final de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort<Long, VersionDomainModel> versionAggregateFetchPort,
+			@Qualifier("versionAggregateFetchPort") final AggregateFetchPort<Long, VersionDomainModel> versionAggregateFetchPort,
 			@Qualifier("versionDomainResponseBuilder") final DomainResponseBuilder<VersionDomainModel, VersionDomainModelResponse> versionDomainResponseBuilder,
 			@Qualifier("versionDomainToAPIResponseAdapter") final DomainToAPIResponseAdapter<VersionAPIModelResponse, Long, VersionDomainModelResponse> versionDomainToAPIResponseAdapter)
 	{
@@ -140,7 +202,8 @@ class TaskCrudRelationshipConfiguration
 												  versionDomainResponseBuilder,
 												  versionDomainToAPIResponseAdapter,
 												  versionId))
-						                  .toList());
+						                  .toList(),
+						taskDomainModel.notes());
 			}
 
 			@Override
@@ -153,11 +216,77 @@ class TaskCrudRelationshipConfiguration
 						taskDomainModelBuilderFactory,
 						taskDomainModel,
 						hydratedVersion.map(version -> versionDomainToAPIResponseAdapter.mapToAPIModelResponse(
-										   IdentifiedModel.of(
-												   version.id(),
-												   versionDomainResponseBuilder.toResponse(version.model()))))
+											   IdentifiedModel.of(
+													   version.id(),
+													   versionDomainResponseBuilder.toResponse(version.model()))))
 						           .stream()
-						           .toList());
+						               .toList(),
+						taskDomainModel.notes());
+			}
+		};
+	}
+
+	@Bean
+	@Qualifier("noteLinkStrategy")
+	SatelliteLinkStrategy<Long, TaskDomainModel, Long, NoteDomainModel> noteLinkStrategy(
+			final ModelBuilderFactory<TaskDomainModel, TaskDomainModel.TaskDomainModelBuilder> taskDomainModelBuilderFactory,
+			@Qualifier("noteAggregateFetchPort") final AggregateFetchPort<Long, NoteDomainModel> noteAggregateFetchPort,
+			@Qualifier("noteDomainResponseBuilder") final DomainResponseBuilder<NoteDomainModel, NoteDomainModelResponse> noteDomainResponseBuilder,
+			@Qualifier("noteDomainToAPIResponseAdapter") final DomainToAPIResponseAdapter<NoteAPIModelResponse, Long, NoteDomainModelResponse> noteDomainToAPIResponseAdapter)
+	{
+		return new SatelliteLinkStrategy<>()
+		{
+			@Override
+			public SatellitePersistenceOrder persistenceOrder()
+			{
+				return SatellitePersistenceOrder.SATELLITE_BEFORE_MASTER;
+			}
+
+			@Override
+			public Optional<Long> currentLinkedSatelliteDomainId(final TaskDomainModel taskDomainModel)
+			{
+				return taskDomainModel.notes().stream().findFirst().map(NoteAPIModelResponse::id);
+			}
+
+			@Override
+			public Collection<Long> currentLinkedSatelliteDomainIds(final TaskDomainModel taskDomainModel)
+			{
+				return taskDomainModel.notes().stream().map(NoteAPIModelResponse::id).toList();
+			}
+
+			@Override
+			public TaskDomainModel replaceLinkedSatelliteDomainIds(
+					final TaskDomainModel taskDomainModel,
+					final Collection<Long> satelliteDomainIds)
+			{
+				return rebuildTaskDomainModel(
+						taskDomainModelBuilderFactory,
+						taskDomainModel,
+						taskDomainModel.versions(),
+						satelliteDomainIds.stream()
+						                  .map(noteId -> toNoteResponse(
+												  noteAggregateFetchPort,
+												  noteDomainResponseBuilder,
+												  noteDomainToAPIResponseAdapter,
+												  noteId))
+						                  .toList());
+			}
+
+			@Override
+			public TaskDomainModel attachHydratedSatellites(
+					final TaskDomainModel taskDomainModel,
+					final Collection<IdentifiedModel<Long, NoteDomainModel>> satellites)
+			{
+				return rebuildTaskDomainModel(
+						taskDomainModelBuilderFactory,
+						taskDomainModel,
+						taskDomainModel.versions(),
+						satellites.stream()
+						          .map(note -> noteDomainToAPIResponseAdapter.mapToAPIModelResponse(
+										  IdentifiedModel.of(
+												  note.id(),
+												  noteDomainResponseBuilder.toResponse(note.model()))))
+						          .toList());
 			}
 		};
 	}
@@ -166,23 +295,16 @@ class TaskCrudRelationshipConfiguration
 	@Qualifier("versionHydrationStrategy")
 	SatelliteHydrationStrategy<Long, TaskDomainModel, Long, VersionDomainModel> versionHydrationStrategy()
 	{
-		return (task, satelliteFetchPort, satelliteLinkStrategy) -> satelliteLinkStrategy.currentLinkedSatelliteDomainIds(
-																								 task.model())
-		                                                                                 .stream()
-		                                                                                 .map(satelliteFetchPort::findById)
-		                                                                                 .flatMap(
-																								 java.util.Optional::stream)
-		                                                                                 .collect(
-																								 java.util.stream.Collectors.collectingAndThen(
-																										 java.util.stream.Collectors.toList(),
-																										 versions ->
-																												 versions.isEmpty()
-																														 ?
-																														 task.model()
-																														 :
-																														 satelliteLinkStrategy.attachHydratedSatellites(
-																																 task.model(),
-																																 versions)));
+		return (task, satelliteFetchPort, satelliteLinkStrategy) -> hydrate(task, satelliteFetchPort,
+				satelliteLinkStrategy);
+	}
+
+	@Bean
+	@Qualifier("noteHydrationStrategy")
+	SatelliteHydrationStrategy<Long, TaskDomainModel, Long, NoteDomainModel> noteHydrationStrategy()
+	{
+		return (task, satelliteFetchPort, satelliteLinkStrategy) -> hydrate(task, satelliteFetchPort,
+				satelliteLinkStrategy);
 	}
 
 	@Bean
@@ -213,31 +335,107 @@ class TaskCrudRelationshipConfiguration
 				.build();
 	}
 
+	@Bean
+	@Qualifier("noteRelationshipDefinition")
+	AggregateRelationshipDefinition<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch, Long, NoteDomainModel, NoteDomainModelCreate, NoteDomainModelUpdatePatch> noteRelationshipDefinition(
+			@Qualifier("noteLifecycleSemantics") final LifecycleSemantics lifecycleSemantics,
+			@Qualifier("noteAggregateCrudDefinition") final AggregateCrudDefinition<Long, NoteDomainModel, NoteDomainModelCreate, NoteDomainModelUpdatePatch,
+					NoteDomainModelResponse> noteAggregateCrudDefinition,
+			@Qualifier("noteCreateInputResolver") final SatelliteCreateInputResolver<TaskDomainModelCreate, Collection<SatelliteCreateIntent<Long, NoteDomainModelCreate>>> createInputResolver,
+			@Qualifier("notePatchInputResolver") final SatellitePatchInputResolver<TaskDomainModelUpdatePatch, Collection<SatelliteMutationIntent<Long, NoteDomainModelCreate,
+					NoteDomainModelUpdatePatch>>> patchInputResolver,
+			@Qualifier("noteIdentityResolver") final SatelliteIdentityResolver<TaskDomainModel, NoteDomainModel, Long> identityResolver,
+			@Qualifier("noteLinkStrategy") final SatelliteLinkStrategy<Long, TaskDomainModel, Long, NoteDomainModel> linkStrategy,
+			@Qualifier("noteHydrationStrategy") final SatelliteHydrationStrategy<Long, TaskDomainModel, Long, NoteDomainModel> hydrationStrategy)
+	{
+		return AggregateRelationshipDefinitions
+				.<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch, Long, NoteDomainModel, NoteDomainModelCreate, NoteDomainModelUpdatePatch>aggregateRelationshipDefinition()
+				.name("note")
+				.cardinality(Cardinality.MANY)
+				.lifecycleSemantics(lifecycleSemantics)
+				.satelliteDefinition(noteAggregateCrudDefinition)
+				.createInputResolver(createInputResolver)
+				.patchInputResolver(patchInputResolver)
+				.identityResolver(identityResolver)
+				.reconciliationStrategy(ReconciliationStrategy.MERGE_BY_ID)
+				.linkStrategy(linkStrategy)
+				.hydrationStrategy(hydrationStrategy)
+				.build();
+	}
+
+	private LifecycleSemantics fullLifecycleSemantics()
+	{
+		return LifecycleSemanticsBuilder.lifecycleSemantics()
+		                                .cascadeCreate()
+		                                .cascadeUpdate()
+		                                .cascadeDelete()
+		                                .orphanDelete()
+		                                .hydrateOnFetch()
+		                                .build();
+	}
+
+	private <SatelliteDomainId, SatelliteDomainModel, MasterDomainId, MasterDomainModel>
+	MasterDomainModel hydrate(
+			final IdentifiedModel<MasterDomainId, MasterDomainModel> master,
+			final AggregateFetchPort<SatelliteDomainId, SatelliteDomainModel> satelliteFetchPort,
+			final SatelliteLinkStrategy<MasterDomainId, MasterDomainModel, SatelliteDomainId, SatelliteDomainModel> satelliteLinkStrategy)
+	{
+		return satelliteLinkStrategy.currentLinkedSatelliteDomainIds(master.model())
+		                            .stream()
+		                            .map(satelliteFetchPort::findById)
+		                            .flatMap(Optional::stream)
+		                            .collect(java.util.stream.Collectors.collectingAndThen(
+											java.util.stream.Collectors.toList(),
+											satellites -> satellites.isEmpty()
+													? master.model()
+													: satelliteLinkStrategy.attachHydratedSatellites(
+													master.model(),
+													satellites)));
+	}
+
 	private TaskDomainModel rebuildTaskDomainModel(
 			final ModelBuilderFactory<TaskDomainModel, TaskDomainModel.TaskDomainModelBuilder> taskDomainModelBuilderFactory,
 			final TaskDomainModel taskDomainModel,
-			final Collection<VersionAPIModelResponse> versions)
+			final Collection<VersionAPIModelResponse> versions,
+			final Collection<NoteAPIModelResponse> notes)
 	{
 		return taskDomainModelBuilderFactory.builder()
 		                                    .withTitle(taskDomainModel.title())
 		                                    .withDescription(taskDomainModel.description())
 		                                    .withVersions(versions)
+		                                    .withNotes(notes)
 		                                    .build();
 	}
 
 	private VersionAPIModelResponse toVersionResponse(
-			final de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort<Long, VersionDomainModel> versionAggregateFetchPort,
+			final AggregateFetchPort<Long, VersionDomainModel> versionAggregateFetchPort,
 			final DomainResponseBuilder<VersionDomainModel, VersionDomainModelResponse> versionDomainResponseBuilder,
 			final DomainToAPIResponseAdapter<VersionAPIModelResponse, Long, VersionDomainModelResponse> versionDomainToAPIResponseAdapter,
 			final Long versionId)
 	{
 		var versionDomainModel = versionAggregateFetchPort.findById(versionId)
-		                                                          .orElseThrow(
-																		  () -> de.gupta.clean.crud.template.domain.model.exceptions.resource.ResourceNotFoundException.withId(
-																				  versionId));
+		                                                  .orElseThrow(
+				                                                  () -> de.gupta.clean.crud.template.domain.model.exceptions.resource.ResourceNotFoundException.withId(
+																		  versionId));
 		return versionDomainToAPIResponseAdapter.mapToAPIModelResponse(
 				IdentifiedModel.of(
 						versionDomainModel.id(),
 						versionDomainResponseBuilder.toResponse(versionDomainModel.model())));
+	}
+
+	private NoteAPIModelResponse toNoteResponse(
+			final AggregateFetchPort<Long, NoteDomainModel> noteAggregateFetchPort,
+			final DomainResponseBuilder<NoteDomainModel, NoteDomainModelResponse> noteDomainResponseBuilder,
+			final DomainToAPIResponseAdapter<NoteAPIModelResponse, Long, NoteDomainModelResponse> noteDomainToAPIResponseAdapter,
+			final Long noteId)
+	{
+		var noteDomainModel = noteAggregateFetchPort.findById(noteId)
+		                                            .orElseThrow(
+				                                            () -> de.gupta.clean.crud.template.domain.model.exceptions.resource.ResourceNotFoundException.withId(
+																	noteId));
+		return noteDomainToAPIResponseAdapter.mapToAPIModelResponse(
+				IdentifiedModel.of(
+						noteDomainModel.id(),
+						noteDomainResponseBuilder.toResponse(noteDomainModel.model())));
 	}
 }

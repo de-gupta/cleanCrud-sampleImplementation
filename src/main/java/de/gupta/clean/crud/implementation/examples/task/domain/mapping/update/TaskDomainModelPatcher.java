@@ -21,6 +21,7 @@ final class TaskDomainModelPatcher implements DomainModelPatcher<TaskDomainModel
 										  updatePatch.description() :
 										  originalModel.description())
 								  .withVersions(originalModel.versions())
+								  .withNotes(originalModel.notes())
 								  .build();
 	}
 

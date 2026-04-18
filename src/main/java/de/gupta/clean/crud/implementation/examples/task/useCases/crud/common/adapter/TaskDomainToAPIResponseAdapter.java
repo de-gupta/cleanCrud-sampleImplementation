@@ -20,7 +20,8 @@ final class TaskDomainToAPIResponseAdapter
 				idAdapter.mapToAPIModelID(domainModel.id()),
 				domainModel.model().title(),
 				domainModel.model().description(),
-				domainModel.model().versions());
+				domainModel.model().versions(),
+				domainModel.model().notes());
 	}
 
 	TaskDomainToAPIResponseAdapter(final APIDomainIDAdapter<Long, Long> idAdapter)

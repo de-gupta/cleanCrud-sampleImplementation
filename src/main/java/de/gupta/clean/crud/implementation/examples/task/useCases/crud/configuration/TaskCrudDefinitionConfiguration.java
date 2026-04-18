@@ -37,7 +37,8 @@ class TaskCrudDefinitionConfiguration
 			@Qualifier("taskDeletionPolicy") final DeletionPolicy<TaskDomainModel> deletionPolicy,
 			@Qualifier("taskDomainSecurityPolicy") final DomainSecurityPolicy<TaskDomainModel> securityPolicy,
 			@Qualifier("taskDuplicateDefinition") final DuplicateDefinition<TaskDomainModel> duplicateDefinition,
-			@Qualifier("versionRelationshipDefinition") final AggregateRelationshipDefinition<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch, ?, ?, ?, ?> versionRelationshipDefinition)
+			@Qualifier("versionRelationshipDefinition") final AggregateRelationshipDefinition<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch, ?, ?, ?, ?> versionRelationshipDefinition,
+			@Qualifier("noteRelationshipDefinition") final AggregateRelationshipDefinition<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch, ?, ?, ?, ?> noteRelationshipDefinition)
 	{
 		return AggregateCrudDefinitions.<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch, TaskDomainModelResponse>
 											   aggregateCrudDefinition()
@@ -52,6 +53,7 @@ class TaskCrudDefinitionConfiguration
 		                               .securityPolicy(securityPolicy)
 		                               .duplicateDefinition(duplicateDefinition)
 		                               .relationshipDefinition(versionRelationshipDefinition)
+		                               .relationshipDefinition(noteRelationshipDefinition)
 		                               .build();
 	}
 }

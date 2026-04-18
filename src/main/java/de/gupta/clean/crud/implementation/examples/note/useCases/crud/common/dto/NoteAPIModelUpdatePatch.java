@@ -6,4 +6,8 @@ public record NoteAPIModelUpdatePatch(
 		Optional<String> note
 )
 {
+	public static NoteAPIModelUpdatePatch of(final Optional<String> note)
+	{
+		return new NoteAPIModelUpdatePatch(note);
+	}
 }

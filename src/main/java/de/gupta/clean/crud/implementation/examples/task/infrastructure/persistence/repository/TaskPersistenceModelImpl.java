@@ -5,9 +5,7 @@ import de.gupta.clean.crud.template.domain.model.builder.AbstractModelBuilder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "task_persistence_model")
@@ -24,6 +22,10 @@ public class TaskPersistenceModelImpl implements TaskPersistenceModel
 	private String description;
 	@Column
 	private Long versionId;
+	@ElementCollection
+	@CollectionTable(name = "task_note_ids", joinColumns = @JoinColumn(name = "task_id"))
+	@Column(name = "note_id", nullable = false)
+	private Collection<Long> noteIds;
 
 	static TaskPersistenceModelBuilder builder()
 	{
@@ -55,6 +57,12 @@ public class TaskPersistenceModelImpl implements TaskPersistenceModel
 	}
 
 	@Override
+	public Collection<Long> noteIds()
+	{
+		return noteIds == null ? List.of() : List.copyOf(noteIds);
+	}
+
+	@Override
 	public void setTitle(final String title)
 	{
 		this.title = title;
@@ -72,6 +80,13 @@ public class TaskPersistenceModelImpl implements TaskPersistenceModel
 	public void setVersionId(final Long versionId)
 	{
 		this.versionId = versionId;
+		this.validate();
+	}
+
+	@Override
+	public void setNoteIds(final Collection<Long> noteIds)
+	{
+		this.noteIds = noteIds == null ? new ArrayList<>() : new ArrayList<>(noteIds);
 		this.validate();
 	}
 
@@ -115,6 +130,13 @@ public class TaskPersistenceModelImpl implements TaskPersistenceModel
 		public TaskPersistenceModelBuilder withVersionId(final Optional<Long> versionId)
 		{
 			model.versionId = versionId.orElse(null);
+			return this;
+		}
+
+		@Override
+		public TaskPersistenceModelBuilder withNoteIds(final Collection<Long> noteIds)
+		{
+			model.noteIds = new ArrayList<>(noteIds);
 			return this;
 		}
 
