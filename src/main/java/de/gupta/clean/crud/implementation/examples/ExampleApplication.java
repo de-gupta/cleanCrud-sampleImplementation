@@ -1,6 +1,8 @@
 package de.gupta.clean.crud.implementation.examples;
 
+import de.gupta.clean.crud.implementation.examples.note.NoteModuleConfiguration;
 import de.gupta.clean.crud.implementation.examples.task.TaskModuleConfiguration;
+import de.gupta.clean.crud.implementation.examples.version.VersionModuleConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -11,6 +13,8 @@ import org.springframework.context.annotation.Import;
 @Import(
 		{
 				TaskModuleConfiguration.class,
+				VersionModuleConfiguration.class,
+				NoteModuleConfiguration.class
 //				PersonModuleConfiguration.class,
 		}
 )
