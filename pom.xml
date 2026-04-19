@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -11,14 +9,14 @@
     </parent>
 
     <artifactId>cleanCrud-sampleImplementation</artifactId>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.3.0</version>
 
     <name>cleaCrud-sampleImplementation</name>
     <description>A sample implementation of the clean crud library</description>
     <url>https://github.com/de-gupta/cleanCrud-sampleImplementation.git</url>
 
     <properties>
-        <argLine></argLine>
+        <argLine />
         <cleanCrud.version>0.8.0</cleanCrud.version>
         <it.tag.expression>fast | medium</it.tag.expression>
         <test.jvm.args>-Djdk.attach.allowAttachSelf=true -XX:+EnableDynamicAgentLoading</test.jvm.args>
@@ -101,7 +99,7 @@
         <connection>scm:git:ssh://git@github.com/de-gupta/cleanCrud-sampleImplementation.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/de-gupta/cleanCrud-sampleImplementation.git</developerConnection>
         <url>https://github.com/de-gupta/cleanCrud-sampleImplementation.git</url>
-        <tag>HEAD</tag>
+        <tag>v0.3.0</tag>
     </scm>
 
     <build>
