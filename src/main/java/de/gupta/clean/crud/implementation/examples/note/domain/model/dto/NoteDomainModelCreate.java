@@ -10,4 +10,9 @@ public record NoteDomainModelCreate(
 	{
 		return new NoteDomainModelCreate(note);
 	}
+
+	public static NoteDomainModelCreate fromUpdatePatch(final NoteDomainModelUpdatePatch patch)
+	{
+		return NoteDomainModelCreate.of(patch.note().orElseThrow());
+	}
 }

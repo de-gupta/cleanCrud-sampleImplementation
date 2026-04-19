@@ -10,4 +10,9 @@ public record VersionDomainModelCreate(
 	{
 		return new VersionDomainModelCreate(version);
 	}
+
+	public static VersionDomainModelCreate fromUpdatePatch(final VersionDomainModelUpdatePatch patch)
+	{
+		return of(patch.version().orElseThrow());
+	}
 }
