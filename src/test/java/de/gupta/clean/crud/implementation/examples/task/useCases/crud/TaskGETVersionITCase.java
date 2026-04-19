@@ -5,6 +5,7 @@ import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.
 import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelResponse;
 import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelUpdatePatch;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -16,10 +17,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static de.gupta.clean.crud.implementation.examples.setup.TestTags.FAST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Tag(FAST)
 @DisplayName("Task GET Version Relationship Endpoint Tests")
 class TaskGETVersionITCase extends AbstractTaskVersionITCase
 {

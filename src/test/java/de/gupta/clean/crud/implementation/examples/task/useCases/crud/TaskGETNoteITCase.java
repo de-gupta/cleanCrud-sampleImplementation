@@ -4,6 +4,7 @@ import de.gupta.clean.crud.implementation.examples.note.useCases.crud.common.dto
 import de.gupta.clean.crud.implementation.examples.note.useCases.crud.common.dto.NoteAPIModelResponse;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelCreate;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -13,8 +14,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static de.gupta.clean.crud.implementation.examples.setup.TestTags.FAST;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Tag(FAST)
 @DisplayName("Task GET Note Relationship Endpoint Tests")
 class TaskGETNoteITCase extends AbstractTaskNoteITCase
 {

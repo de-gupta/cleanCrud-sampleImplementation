@@ -1,8 +1,10 @@
 package de.gupta.clean.crud.implementation.examples.task.useCases.crud;
 
+import de.gupta.clean.crud.implementation.examples.setup.TestModes;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelCreate;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelResponse;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -10,6 +12,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static de.gupta.clean.crud.implementation.examples.setup.TestTags.FAST;
+import static de.gupta.clean.crud.implementation.examples.setup.TestTags.MEDIUM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -21,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TaskGETITCase extends AbstractTaskITCase
 {
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should retrieve a task by ID")
 	void shouldRetrieveTaskById() throws Exception
 	{
@@ -42,10 +47,16 @@ class TaskGETITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(MEDIUM)
 	@DisplayName("Should retrieve all tasks with pagination")
 	void shouldRetrieveAllTasks() throws Exception
 	{
-		int taskCount = 250;
+		int taskCount = switch (TestModes.current())
+		{
+			case FAST -> 50;
+			case MEDIUM -> 250;
+			case FULL -> 1_000;
+		};
 		List<TaskAPIModelResponse> createdTasks = new ArrayList<>();
 
 		for (int i = 0; i < taskCount; i++)
@@ -83,12 +94,23 @@ class TaskGETITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(MEDIUM)
 	@DisplayName("Should retrieve all tasks with pagination and filtering")
 	void shouldRetrieveAllTasksWithPagination() throws Exception
 	{
 		String filterKeyword = "FILTERABLE";
-		int filteredTaskCount = 200;
-		int regularTaskCount = 100;
+		int filteredTaskCount = switch (TestModes.current())
+		{
+			case FAST -> 100;
+			case MEDIUM -> 200;
+			case FULL -> 1_000;
+		};
+		int regularTaskCount = switch (TestModes.current())
+		{
+			case FAST -> 50;
+			case MEDIUM -> 100;
+			case FULL -> 500;
+		};
 
 		for (int i = 0; i < filteredTaskCount; i++)
 		{
@@ -136,6 +158,7 @@ class TaskGETITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should return 404 when task not found")
 	void shouldReturn404WhenTaskNotFound() throws Exception
 	{
@@ -144,6 +167,7 @@ class TaskGETITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should handle malformed ID in URL path")
 	void shouldHandleMalformedIdInPath() throws Exception
 	{
@@ -152,6 +176,7 @@ class TaskGETITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should retrieve multiple tasks by IDs")
 	void shouldRetrieveTasksByIds() throws Exception
 	{
@@ -209,6 +234,7 @@ class TaskGETITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should handle mix of existing and non-existent IDs")
 	void shouldHandleMixOfExistingAndNonExistentIds() throws Exception
 	{
@@ -254,6 +280,7 @@ class TaskGETITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should handle empty list of IDs")
 	void shouldHandleEmptyListOfIds() throws Exception
 	{
@@ -279,6 +306,7 @@ class TaskGETITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should handle invalid IDs")
 	void shouldHandleInvalidIds() throws Exception
 	{

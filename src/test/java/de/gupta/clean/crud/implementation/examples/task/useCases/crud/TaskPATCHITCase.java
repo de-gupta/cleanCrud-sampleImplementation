@@ -4,6 +4,7 @@ import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelResponse;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelUpdatePatch;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,10 +14,12 @@ import org.springframework.http.MediaType;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static de.gupta.clean.crud.implementation.examples.setup.TestTags.FAST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Tag(FAST)
 @DisplayName("Task PATCH Endpoint Tests")
 class TaskPATCHITCase extends AbstractTaskITCase
 {

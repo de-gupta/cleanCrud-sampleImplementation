@@ -3,14 +3,17 @@ package de.gupta.clean.crud.implementation.examples.task.useCases.crud;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelCreate;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelResponse;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import static de.gupta.clean.crud.implementation.examples.setup.TestTags.FAST;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Tag(FAST)
 @DisplayName("Task DELETE and OPTIONS Endpoint Tests")
 class TaskDELETEITCase extends AbstractTaskITCase
 {
