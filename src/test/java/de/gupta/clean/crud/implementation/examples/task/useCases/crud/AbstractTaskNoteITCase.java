@@ -5,7 +5,7 @@ import de.gupta.clean.crud.implementation.examples.note.useCases.crud.common.dto
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelCreate;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelResponse;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelUpdatePatch;
-import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskNoteAPIModelUpdatePatchItem;
+import de.gupta.clean.crud.template.useCases.crud.aggregate.relationship.standard.SatelliteUpdatePatchItem;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -24,16 +24,17 @@ abstract class AbstractTaskNoteITCase extends AbstractTaskITCase
 		return "note-" + noteCounter.incrementAndGet();
 	}
 
-	protected static TaskNoteAPIModelUpdatePatchItem notePatchWithId(final long id, final String note)
+	protected static SatelliteUpdatePatchItem<Long, NoteAPIModelUpdatePatch> notePatchWithId(final long id,
+	                                                                                         final String note)
 	{
-		return TaskNoteAPIModelUpdatePatchItem.of(
+		return SatelliteUpdatePatchItem.of(
 				java.util.Optional.of(id),
 				NoteAPIModelUpdatePatch.of(java.util.Optional.of(note)));
 	}
 
-	protected static TaskNoteAPIModelUpdatePatchItem notePatchWithoutId(final String note)
+	protected static SatelliteUpdatePatchItem<Long, NoteAPIModelUpdatePatch> notePatchWithoutId(final String note)
 	{
-		return TaskNoteAPIModelUpdatePatchItem.of(
+		return SatelliteUpdatePatchItem.of(
 				java.util.Optional.empty(),
 				NoteAPIModelUpdatePatch.of(java.util.Optional.of(note)));
 	}

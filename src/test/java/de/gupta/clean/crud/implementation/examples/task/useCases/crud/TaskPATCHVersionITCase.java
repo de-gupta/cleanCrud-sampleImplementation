@@ -2,10 +2,10 @@ package de.gupta.clean.crud.implementation.examples.task.useCases.crud;
 
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelCreate;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelUpdatePatch;
-import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskVersionAPIModelUpdatePatchItem;
 import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelCreate;
 import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelResponse;
 import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelUpdatePatch;
+import de.gupta.clean.crud.template.useCases.crud.aggregate.relationship.standard.SatelliteUpdatePatchItem;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ class TaskPATCHVersionITCase extends AbstractTaskVersionITCase
 				TaskAPIModelUpdatePatch.of(
 						Optional.empty(),
 						Optional.empty(),
-						Optional.of(List.of(TaskVersionAPIModelUpdatePatchItem.of(
+						Optional.of(List.of(SatelliteUpdatePatchItem.of(
 								Optional.empty(),
 								VersionAPIModelUpdatePatch.of(Optional.of(upsertCase.updatedVersionValue()))))),
 						List.of()));
@@ -113,9 +113,9 @@ class TaskPATCHVersionITCase extends AbstractTaskVersionITCase
 				Optional.empty(),
 				Optional.empty(),
 				Optional.of(List.of(
-						TaskVersionAPIModelUpdatePatchItem.of(Optional.empty(),
+						SatelliteUpdatePatchItem.of(Optional.empty(),
 								VersionAPIModelUpdatePatch.of(Optional.of(nextVersionValue()))),
-						TaskVersionAPIModelUpdatePatchItem.of(Optional.empty(),
+						SatelliteUpdatePatchItem.of(Optional.empty(),
 								VersionAPIModelUpdatePatch.of(Optional.of(nextVersionValue()))))),
 				List.of());
 

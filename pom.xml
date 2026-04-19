@@ -17,7 +17,7 @@
 
     <properties>
         <argLine />
-        <cleanCrud.version>0.8.0</cleanCrud.version>
+        <cleanCrud.version>0.8.1-SNAPSHOT</cleanCrud.version>
         <it.tag.expression>fast | medium</it.tag.expression>
         <test.jvm.args>-Djdk.attach.allowAttachSelf=true -XX:+EnableDynamicAgentLoading</test.jvm.args>
         <test.mode>medium</test.mode>

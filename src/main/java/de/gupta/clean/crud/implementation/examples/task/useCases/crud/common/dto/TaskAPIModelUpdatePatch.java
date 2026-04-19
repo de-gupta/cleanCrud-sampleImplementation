@@ -1,5 +1,9 @@
 package de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto;
 
+import de.gupta.clean.crud.implementation.examples.note.useCases.crud.common.dto.NoteAPIModelUpdatePatch;
+import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelUpdatePatch;
+import de.gupta.clean.crud.template.useCases.crud.aggregate.relationship.standard.SatelliteUpdatePatchItem;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -7,9 +11,9 @@ import java.util.Optional;
 public record TaskAPIModelUpdatePatch(
 		Optional<String> title,
 		Optional<String> description,
-		Optional<Collection<TaskVersionAPIModelUpdatePatchItem>> versions,
+		Optional<Collection<SatelliteUpdatePatchItem<Long, VersionAPIModelUpdatePatch>>> versions,
 		Collection<Long> removeVersionIds,
-		Optional<Collection<TaskNoteAPIModelUpdatePatchItem>> notes,
+		Optional<Collection<SatelliteUpdatePatchItem<Long, NoteAPIModelUpdatePatch>>> notes,
 		Collection<Long> removeNoteIds
 )
 {
@@ -19,16 +23,16 @@ public record TaskAPIModelUpdatePatch(
 	}
 
 	public static TaskAPIModelUpdatePatch of(final Optional<String> title, final Optional<String> description,
-	                                         final Optional<Collection<TaskVersionAPIModelUpdatePatchItem>> versions,
+	                                         final Optional<Collection<SatelliteUpdatePatchItem<Long, VersionAPIModelUpdatePatch>>> versions,
 	                                         final Collection<Long> removeVersionIds,
-	                                         final Optional<Collection<TaskNoteAPIModelUpdatePatchItem>> notes,
+	                                         final Optional<Collection<SatelliteUpdatePatchItem<Long, NoteAPIModelUpdatePatch>>> notes,
 	                                         final Collection<Long> removeNoteIds)
 	{
 		return new TaskAPIModelUpdatePatch(title, description, versions, removeVersionIds, notes, removeNoteIds);
 	}
 
 	public static TaskAPIModelUpdatePatch of(final Optional<String> title, final Optional<String> description,
-	                                         final Optional<Collection<TaskVersionAPIModelUpdatePatchItem>> versions,
+	                                         final Optional<Collection<SatelliteUpdatePatchItem<Long, VersionAPIModelUpdatePatch>>> versions,
 	                                         final Collection<Long> removeVersionIds)
 	{
 		return of(title, description, versions, removeVersionIds, Optional.empty(), List.of());
