@@ -1,13 +1,19 @@
 package de.gupta.clean.crud.implementation.examples.task.domain.model;
 
+import de.gupta.clean.crud.implementation.examples.note.useCases.crud.common.dto.NoteAPIModelResponse;
+import de.gupta.clean.crud.implementation.examples.version.useCases.crud.common.dto.VersionAPIModelResponse;
 import de.gupta.clean.crud.template.domain.model.builder.AbstractModelBuilder;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 final class TaskDomainModelImpl implements TaskDomainModel
 {
 	private String title;
 	private String description;
+	private Collection<VersionAPIModelResponse> versions;
+	private Collection<NoteAPIModelResponse> notes;
 
 	static TaskDomainModelBuilder builder()
 	{
@@ -24,6 +30,18 @@ final class TaskDomainModelImpl implements TaskDomainModel
 	public Optional<String> description()
 	{
 		return Optional.ofNullable(description);
+	}
+
+	@Override
+	public Collection<VersionAPIModelResponse> versions()
+	{
+		return versions == null ? List.of() : List.copyOf(versions);
+	}
+
+	@Override
+	public Collection<NoteAPIModelResponse> notes()
+	{
+		return notes == null ? List.of() : List.copyOf(notes);
 	}
 
 	@Override
@@ -61,6 +79,20 @@ final class TaskDomainModelImpl implements TaskDomainModel
 		public TaskDomainModelBuilder withDescription(final Optional<String> description)
 		{
 			model.description = description.orElse(null);
+			return this;
+		}
+
+		@Override
+		public TaskDomainModelBuilder withVersions(final Collection<VersionAPIModelResponse> versions)
+		{
+			model.versions = List.copyOf(versions);
+			return this;
+		}
+
+		@Override
+		public TaskDomainModelBuilder withNotes(final Collection<NoteAPIModelResponse> notes)
+		{
+			model.notes = List.copyOf(notes);
 			return this;
 		}
 

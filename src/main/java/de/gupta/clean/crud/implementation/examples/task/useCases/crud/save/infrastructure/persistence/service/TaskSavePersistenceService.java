@@ -4,7 +4,6 @@ import de.gupta.clean.crud.implementation.examples.task.domain.model.TaskDomainM
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.model.TaskPersistenceModel;
 import de.gupta.clean.crud.template.infrastructure.persistence.adapter.persistence.domain.id.adapter.DomainPersistenceIDManagement;
 import de.gupta.clean.crud.template.infrastructure.persistence.adapter.persistence.domain.model.DomainPersistenceModelAdapter;
-import de.gupta.clean.crud.template.infrastructure.persistence.transaction.PersistenceTransactionRunner;
 import de.gupta.clean.crud.template.useCases.crud.save.application.service.SavePersistenceService;
 import de.gupta.clean.crud.template.useCases.crud.save.infrastructure.persistence.service.AbstractSavePersistenceService;
 import de.gupta.clean.crud.template.useCases.crud.save.infrastructure.persistence.service.SavePersistenceModelRepository;
@@ -22,10 +21,9 @@ final class TaskSavePersistenceService extends
 	TaskSavePersistenceService(
 			final SavePersistenceModelRepository<TaskPersistenceModel> repository,
 			final DomainPersistenceModelAdapter<TaskDomainModel, TaskPersistenceModel> modelAdapter,
-			@Qualifier("taskDomainPersistenceIDManagement") final DomainPersistenceIDManagement<Long, UUID> idManagement,
-			final PersistenceTransactionRunner transactionRunner
+			@Qualifier("taskDomainPersistenceIDManagement") final DomainPersistenceIDManagement<Long, UUID> idManagement
 	)
 	{
-		super(repository, modelAdapter, idManagement, transactionRunner);
+		super(repository, modelAdapter, idManagement);
 	}
 }

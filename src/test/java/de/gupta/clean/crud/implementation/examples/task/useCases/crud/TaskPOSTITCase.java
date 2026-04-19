@@ -1,8 +1,10 @@
 package de.gupta.clean.crud.implementation.examples.task.useCases.crud;
 
+import de.gupta.clean.crud.implementation.examples.setup.TestModes;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelCreate;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelResponse;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static de.gupta.clean.crud.implementation.examples.setup.TestTags.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,6 +37,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 {
 	@ParameterizedTest(name = "{index}: {0}")
 	@MethodSource("provideTasksForCreation")
+	@Tag(FAST)
 	@DisplayName("Should create a new task and return it with an ID")
 	void shouldCreateTask(String testCase, TaskAPIModelCreate taskToCreate) throws Exception
 	{
@@ -60,10 +64,12 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should handle POST with empty title")
 	void shouldHandlePostWithEmptyTitle() throws Exception
 	{
-		TaskAPIModelCreate emptyTitleTask = new TaskAPIModelCreate("", Optional.of("Description for empty title task"));
+		TaskAPIModelCreate emptyTitleTask = TaskAPIModelCreate.of("", Optional.of("Description for empty title " +
+				"task"));
 
 		mockMvc.perform(post("/task/save")
 					   .contentType(MediaType.APPLICATION_JSON)
@@ -72,6 +78,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should handle POST with null title")
 	void shouldHandlePostWithNullTitle() throws Exception
 	{
@@ -84,6 +91,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should handle POST with very long data")
 	void shouldHandlePostWithLongData() throws Exception
 	{
@@ -100,7 +108,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 		assertThat(longDescription.length()).isGreaterThan(255);
 		System.out.println("Description length: " + longDescription.length());
 
-		TaskAPIModelCreate longDataTask = new TaskAPIModelCreate(
+		TaskAPIModelCreate longDataTask = TaskAPIModelCreate.of(
 				uniqueTaskTitle(longTitle),
 				Optional.of(longDescription)
 		);
@@ -124,15 +132,21 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(MEDIUM)
 	@DisplayName("Should handle multiple sequential POST requests")
 	void shouldHandleMultipleSequentialPosts() throws Exception
 	{
-		int requestCount = 20;
+		int requestCount = switch (TestModes.current())
+		{
+			case FAST -> 10;
+			case MEDIUM -> 20;
+			case FULL -> 50;
+		};
 		List<TaskAPIModelResponse> createdTasks = new ArrayList<>();
 
 		for (int i = 0; i < requestCount; i++)
 		{
-			TaskAPIModelCreate taskToCreate = new TaskAPIModelCreate(
+			TaskAPIModelCreate taskToCreate = TaskAPIModelCreate.of(
 					uniqueTaskTitle("Sequential Task " + i),
 					Optional.of("Description for sequential task " + i)
 			);
@@ -171,6 +185,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should handle invalid JSON format")
 	void shouldHandleInvalidJsonFormat() throws Exception
 	{
@@ -184,13 +199,14 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should handle special characters in task title and description")
 	void shouldHandleSpecialCharacters() throws Exception
 	{
 		String titleWithSpecialChars = "Special Chars: !@#$%^&*()_+{}|:<>?~`-=[]\\;',./\"";
 		String descWithUnicode = "Unicode: 你好, こんにちは, 안녕하세요, Привет, مرحبا, שלום";
 
-		TaskAPIModelCreate specialCharsTask = new TaskAPIModelCreate(
+		TaskAPIModelCreate specialCharsTask = TaskAPIModelCreate.of(
 				uniqueTaskTitle(titleWithSpecialChars),
 				Optional.of(descWithUnicode)
 		);
@@ -214,10 +230,16 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FULL)
 	@DisplayName("Should handle concurrent requests")
 	void shouldHandleConcurrentRequests() throws Exception
 	{
-		int concurrentRequests = 10;
+		int concurrentRequests = switch (TestModes.current())
+		{
+			case FAST -> 5;
+			case MEDIUM -> 10;
+			case FULL -> 20;
+		};
 		CountDownLatch startLatch = new CountDownLatch(1);
 		CountDownLatch endLatch = new CountDownLatch(concurrentRequests);
 		AtomicInteger successCount = new AtomicInteger(0);
@@ -233,7 +255,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 				{
 					startLatch.await();
 
-					TaskAPIModelCreate taskToCreate = new TaskAPIModelCreate(
+					TaskAPIModelCreate taskToCreate = TaskAPIModelCreate.of(
 							uniqueTaskTitle("Concurrent Task " + index),
 							Optional.of("Description for concurrent task " + index)
 					);
@@ -292,6 +314,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should handle long data within database limits")
 	void shouldHandleLongDataWithinLimits() throws Exception
 	{
@@ -302,7 +325,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 				.isGreaterThan(50)
 				.isLessThan(255);
 
-		TaskAPIModelCreate taskWithLongTitle = new TaskAPIModelCreate(
+		TaskAPIModelCreate taskWithLongTitle = TaskAPIModelCreate.of(
 				uniqueTaskTitle(longTitle),
 				Optional.of("Normal description")
 		);
@@ -327,6 +350,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	}
 
 	@Test
+	@Tag(FAST)
 	@DisplayName("Should reject extremely long data")
 	void shouldRejectExtremelyLongData()
 	{
@@ -336,7 +360,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 				.as("Test title should exceed database column limits")
 				.isGreaterThan(255);
 
-		TaskAPIModelCreate taskWithExtremelyLongTitle = new TaskAPIModelCreate(
+		TaskAPIModelCreate taskWithExtremelyLongTitle = TaskAPIModelCreate.of(
 				uniqueTaskTitle(extremelyLongTitle),
 				Optional.of("Normal description")
 		);
@@ -357,6 +381,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 
 	@ParameterizedTest(name = "{index}: Batch of {0} tasks")
 	@MethodSource("provideBatchTasksForCreation")
+	@Tag(MEDIUM)
 	@DisplayName("Should create multiple tasks via batch POST")
 	void shouldCreateTasksViaBatch(int batchSize, List<TaskAPIModelCreate> tasksToCreate) throws Exception
 	{
@@ -406,6 +431,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 
 	@ParameterizedTest(name = "{index}: Batch of {0} tasks with one existing task")
 	@MethodSource("provideBatchTasksForExistingTest")
+	@Tag(MEDIUM)
 	@DisplayName("Should fail batch add when one task already exists")
 	void shouldFailBatchAddWhenTaskAlreadyExists(int batchSize, List<TaskAPIModelCreate> tasksToCreate) throws Exception
 	{
@@ -450,6 +476,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 
 	@ParameterizedTest(name = "{index}: Batch of {0} tasks with internal duplicate")
 	@MethodSource("provideBatchTasksForDuplicateTest")
+	@Tag(MEDIUM)
 	@DisplayName("Should fail batch add when batch contains duplicate tasks")
 	void shouldFailBatchAddWhenBatchContainsDuplicates(int batchSize, List<TaskAPIModelCreate> tasksToCreate)
 			throws Exception
@@ -482,10 +509,10 @@ class TaskPOSTITCase extends AbstractTaskITCase
 	private static Stream<Arguments> provideTasksForCreation()
 	{
 		return Stream.of(
-				Arguments.of("Basic task", new TaskAPIModelCreate(uniqueTaskTitle("Task 1"), Optional.empty())),
+				Arguments.of("Basic task", TaskAPIModelCreate.of(uniqueTaskTitle("Task 1"), Optional.empty())),
 				Arguments.of("Task with description",
-						new TaskAPIModelCreate(uniqueTaskTitle("Task 2"), Optional.of("Description for task 2"))),
-				Arguments.of("Task with long title", new TaskAPIModelCreate(
+						TaskAPIModelCreate.of(uniqueTaskTitle("Task 2"), Optional.of("Description for task 2"))),
+				Arguments.of("Task with long title", TaskAPIModelCreate.of(
 						uniqueTaskTitle(
 								"This is a task with a very long title that should still be processed correctly"),
 						Optional.empty()))
@@ -494,12 +521,8 @@ class TaskPOSTITCase extends AbstractTaskITCase
 
 	private static Stream<Arguments> provideBatchTasksForCreation()
 	{
-		return Stream.of(
-				Arguments.of(10, generateRandomTasks(10)),
-				Arguments.of(100, generateRandomTasks(100)),
-				Arguments.of(500, generateRandomTasks(500)),
-				Arguments.of(1_000, generateRandomTasks(1_000))
-		);
+		return batchSizesForCreation().stream()
+		                              .map(batchSize -> Arguments.of(batchSize, generateRandomTasks(batchSize)));
 	}
 
 	private static List<TaskAPIModelCreate> generateRandomTasks(int count)
@@ -514,28 +537,25 @@ class TaskPOSTITCase extends AbstractTaskITCase
 							Optional<String> description = hasDescription
 									? Optional.of("Description for task " + i + ": " + random.nextInt(1000))
 									: Optional.empty();
-							return new TaskAPIModelCreate(uniqueTaskTitle(title), description);
+							return TaskAPIModelCreate.of(uniqueTaskTitle(title), description);
 						})
 						.collect(Collectors.toList());
 	}
 
 	private static Stream<Arguments> provideBatchTasksForExistingTest()
 	{
-		return Stream.of(
-				Arguments.of(10, generateRandomTasks(10)),
-				Arguments.of(20, generateRandomTasks(20)),
-				Arguments.of(50, generateRandomTasks(50))
-		);
+		return batchSizesForExistingTaskCases().stream()
+		                                       .map(batchSize -> Arguments.of(batchSize,
+													   generateRandomTasks(batchSize)));
 	}
 
 	private static Stream<Arguments> provideBatchTasksForDuplicateTest()
 	{
-		return Stream.of(
-				Arguments.of(10, generateTasksWithDuplicates(10, 1)),
-				Arguments.of(20, generateTasksWithDuplicates(20, 2)),
-				Arguments.of(50, generateTasksWithDuplicates(50, 5)),
-				Arguments.of(50, generateTasksWithDuplicates(5_000, 1))
-		);
+		return duplicateBatchCases().stream()
+		                            .map(batchCase -> Arguments.of(
+											batchCase.displaySize(),
+											generateTasksWithDuplicates(batchCase.taskCount(),
+													batchCase.duplicateCount())));
 	}
 
 	private static List<TaskAPIModelCreate> generateTasksWithDuplicates(int count, int duplicateCount)
@@ -548,7 +568,7 @@ class TaskPOSTITCase extends AbstractTaskITCase
 			int originalIndex = random.nextInt(count);
 			TaskAPIModelCreate originalTask = tasks.get(originalIndex);
 
-			TaskAPIModelCreate duplicateTask = new TaskAPIModelCreate(
+			TaskAPIModelCreate duplicateTask = TaskAPIModelCreate.of(
 					originalTask.title(),
 					originalTask.description()
 			);
@@ -558,5 +578,46 @@ class TaskPOSTITCase extends AbstractTaskITCase
 		}
 
 		return tasks;
+	}
+
+	private static List<Integer> batchSizesForCreation()
+	{
+		return switch (TestModes.current())
+		{
+			case FAST -> List.of(10);
+			case MEDIUM -> List.of(10, 100);
+			case FULL -> List.of(10, 100, 500, 1_000);
+		};
+	}
+
+	private static List<Integer> batchSizesForExistingTaskCases()
+	{
+		return switch (TestModes.current())
+		{
+			case FAST -> List.of(10);
+			case MEDIUM -> List.of(10, 20);
+			case FULL -> List.of(10, 20, 50);
+		};
+	}
+
+	private static List<DuplicateBatchCase> duplicateBatchCases()
+	{
+		return switch (TestModes.current())
+		{
+			case FAST -> List.of(new DuplicateBatchCase(10, 10, 1));
+			case MEDIUM -> List.of(
+					new DuplicateBatchCase(10, 10, 1),
+					new DuplicateBatchCase(20, 20, 2),
+					new DuplicateBatchCase(50, 50, 5));
+			case FULL -> List.of(
+					new DuplicateBatchCase(10, 10, 1),
+					new DuplicateBatchCase(20, 20, 2),
+					new DuplicateBatchCase(50, 50, 5),
+					new DuplicateBatchCase(50, 5_000, 1));
+		};
+	}
+
+	private record DuplicateBatchCase(int displaySize, int taskCount, int duplicateCount)
+	{
 	}
 }

@@ -12,6 +12,10 @@ final class TaskDomainResponseBuilder implements
 	@Override
 	public TaskDomainModelResponse toResponse(final TaskDomainModel taskDomainModel)
 	{
-		return TaskDomainModelResponse.fromDomainModel(taskDomainModel);
+		return new TaskDomainModelResponse(
+				taskDomainModel.title(),
+				taskDomainModel.description(),
+				taskDomainModel.versions(),
+				taskDomainModel.notes());
 	}
 }

@@ -17,6 +17,8 @@ final class TaskDomainModelBuilder implements DomainModelBuilder<TaskDomainModel
         return modelBuilderFactory.builder()
                                   .withTitle(domainModelCreate.title())
                                   .withDescription(domainModelCreate.description())
+                                  .withVersions(java.util.List.of())
+                                  .withNotes(java.util.List.of())
                                   .build();
     }
 
