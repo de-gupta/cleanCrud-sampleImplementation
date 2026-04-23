@@ -4,13 +4,13 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Optional;
 
-public interface PersonModel<O, V, N>
+public interface PersonModel<G, V, N>
 {
 	String firstName();
 
-	O organisation();
+	G tag();
 
-	V version();
+	V currentVersion();
 
 	Optional<V> lastKnownVersion();
 
