@@ -3,9 +3,9 @@ package de.gupta.clean.crud.implementation.examples.person.domain.model;
 import de.gupta.clean.crud.implementation.examples.note.domain.model.NoteModel;
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.TagModel;
 import de.gupta.clean.crud.implementation.examples.version.domain.model.VersionModel;
+import de.gupta.clean.crud.template.domain.relationship.ReconciliationStrategy;
 import de.gupta.clean.crud.template.domain.relationship.Relationship;
 import de.gupta.clean.crud.template.domain.relationship.Relationships;
-import de.gupta.clean.crud.template.useCases.crud.aggregate.relationship.ReconciliationStrategy;
 
 import java.util.Collection;
 import java.util.List;

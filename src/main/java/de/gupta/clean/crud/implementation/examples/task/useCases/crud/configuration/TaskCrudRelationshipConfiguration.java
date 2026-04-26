@@ -21,7 +21,7 @@ import de.gupta.clean.crud.template.domain.model.exceptions.operation.InvalidReq
 import de.gupta.clean.crud.template.useCases.crud.aggregate.builder.AggregateRelationshipDefinitions;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.builder.LifecycleSemanticsBuilder;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.definition.AggregateCrudDefinition;
-import de.gupta.clean.crud.template.useCases.crud.aggregate.lifecycle.LifecycleSemantics;
+import de.gupta.clean.crud.template.domain.relationship.LifecycleSemantics;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.relationship.AggregateRelationshipDefinition;
 import de.gupta.clean.crud.template.useCases.crud.common.adapter.model.DomainToAPIResponseAdapter;
 import org.springframework.beans.factory.annotation.Qualifier;
