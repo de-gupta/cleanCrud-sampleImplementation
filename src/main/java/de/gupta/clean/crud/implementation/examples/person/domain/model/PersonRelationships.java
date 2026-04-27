@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-final class PersonRelationships implements Relationships
+public final class PersonRelationships implements Relationships
 {
 	@Override
 	public Class<?> baseModelClass()
