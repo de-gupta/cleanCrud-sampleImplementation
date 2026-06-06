@@ -1,0 +1,61 @@
+@baseUrl = {{baseUrl}}
+@taskId = 1
+
+### Create task with inline version and notes
+POST {{baseUrl}}/task/save
+Accept: application/json
+Content-Type: application/json
+
+{
+  "title": "Relationship smoke task",
+  "description": "Created from updated IntelliJ request file",
+  "versions": [
+    {
+      "version": 1
+    }
+  ],
+  "notes": [
+    {
+      "note": "task note one"
+    },
+    {
+      "note": "task note two"
+    }
+  ]
+}
+
+> {%
+ client.global.set("taskId", response.body.id);
+%}
+
+### Fetch created task
+GET {{baseUrl}}/task/fetch/{{taskId}}
+Accept: application/json
+
+### Patch task scalar + owned collections
+PATCH {{baseUrl}}/task/update/{{taskId}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "title": "Relationship smoke task updated",
+  "description": "Updated from IntelliJ smoke file",
+  "versions": [
+    {
+      "patch": {
+        "version": 3
+      }
+    }
+  ],
+  "notes": [
+    {
+      "patch": {
+        "note": "task note added via patch"
+      }
+    }
+  ]
+}
+
+### Fetch all tasks
+GET {{baseUrl}}/task/fetch
+Accept: application/json

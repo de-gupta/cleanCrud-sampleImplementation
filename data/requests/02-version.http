@@ -1,0 +1,47 @@
+# Run this file before person smoke tests so currentVersion / lastKnownVersion ids exist.
+@baseUrl = {{baseUrl}}
+@currentVersionId = 1
+@lastKnownVersionId = 2
+
+### Create current version
+POST {{baseUrl}}/version/save
+Accept: application/json
+Content-Type: application/json
+
+{
+  "version": 1
+}
+
+> {%
+ client.global.set("currentVersionId", response.body.id);
+%}
+
+### Create last-known version
+POST {{baseUrl}}/version/save
+Accept: application/json
+Content-Type: application/json
+
+{
+  "version": 2
+}
+
+> {%
+ client.global.set("lastKnownVersionId", response.body.id);
+%}
+
+### Fetch current version
+GET {{baseUrl}}/version/fetch/{{currentVersionId}}
+Accept: application/json
+
+### Patch current version
+PATCH {{baseUrl}}/version/update/{{currentVersionId}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "version": 11
+}
+
+### Fetch all versions
+GET {{baseUrl}}/version/fetch
+Accept: application/json
