@@ -1,0 +1,33 @@
+# Run this file first if you want a referenced Tag for Person.
+@baseUrl = {{baseUrl}}
+@tagId = 1
+
+### Create tag
+POST {{baseUrl}}/tag/save
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "person-smoke-tag"
+}
+
+> {%
+ client.global.set("tagId", response.body.id);
+%}
+
+### Fetch created tag
+GET {{baseUrl}}/tag/fetch/{{tagId}}
+Accept: application/json
+
+### Patch tag
+PATCH {{baseUrl}}/tag/update/{{tagId}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "person-smoke-tag-updated"
+}
+
+### Fetch all tags
+GET {{baseUrl}}/tag/fetch
+Accept: application/json

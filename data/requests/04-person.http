@@ -1,0 +1,63 @@
+# Prerequisites:
+# 1. Run 01-tag.http
+# 2. Run 02-version.http
+@baseUrl = {{baseUrl}}
+@tagId = {{tagId}}
+@currentVersionId = {{currentVersionId}}
+@lastKnownVersionId = {{lastKnownVersionId}}
+@personId = 1
+
+### Create person with referenced tag/versions and inline owned notes
+POST {{baseUrl}}/person/save
+Accept: application/json
+Content-Type: application/json
+
+{
+  "firstName": "Ada",
+  "title": "Engineer",
+  "birthDate": "1990-05-17",
+  "tag": {{tagId}},
+  "currentVersion": {{currentVersionId}},
+  "lastKnownVersion": {{lastKnownVersionId}},
+  "notes": [
+    {
+      "note": "created from smoke request"
+    },
+    {
+      "note": "second note on person"
+    }
+  ]
+}
+
+> {%
+ client.global.set("personId", response.body.id);
+%}
+
+### Fetch created person
+GET {{baseUrl}}/person/fetch/{{personId}}
+Accept: application/json
+
+### Patch person scalar + referenced relationships + owned notes
+PATCH {{baseUrl}}/person/update/{{personId}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "firstName": "Ada Lovelace",
+  "title": "Principal Engineer",
+  "birthDate": "1991-06-18",
+  "tag": {{tagId}},
+  "currentVersion": {{currentVersionId}},
+  "lastKnownVersion": {{lastKnownVersionId}},
+  "notes": [
+    {
+      "patch": {
+        "note": "new note added during patch"
+      }
+    }
+  ]
+}
+
+### Fetch all persons
+GET {{baseUrl}}/person/fetch
+Accept: application/json

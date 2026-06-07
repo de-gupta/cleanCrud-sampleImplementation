@@ -1,0 +1,32 @@
+@baseUrl = {{baseUrl}}
+@noteId = 1
+
+### Create note
+POST {{baseUrl}}/note/save
+Accept: application/json
+Content-Type: application/json
+
+{
+  "note": "standalone smoke note"
+}
+
+> {%
+ client.global.set("noteId", response.body.id);
+%}
+
+### Fetch created note
+GET {{baseUrl}}/note/fetch/{{noteId}}
+Accept: application/json
+
+### Patch note
+PATCH {{baseUrl}}/note/update/{{noteId}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "note": "standalone smoke note updated"
+}
+
+### Fetch all notes
+GET {{baseUrl}}/note/fetch
+Accept: application/json
