@@ -52,6 +52,9 @@ class TaskCrudDefinitionConfiguration
 		                               .deletionPolicy(deletionPolicy)
 		                               .securityPolicy(securityPolicy)
 		                               .duplicateDefinition(duplicateDefinition)
+		                               .postCommitMutation(context -> System.out.printf(
+											   "Task post-commit mutation: kind=%s, id=%s%n", context.kind(),
+											   context.domainId()))
 		                               .relationshipDefinition(versionRelationshipDefinition)
 		                               .relationshipDefinition(noteRelationshipDefinition)
 		                               .build();

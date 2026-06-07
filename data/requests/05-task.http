@@ -7,19 +7,19 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "title": "Relationship smoke task",
-  "description": "Created from updated IntelliJ request file",
+  "title": "Relationship smoke task 900001",
+  "description": "Created from updated IntelliJ request file 900001",
   "versions": [
     {
-      "version": 1
+      "version": 900001
     }
   ],
   "notes": [
     {
-      "note": "task note one"
+      "note": "task note one 900001"
     },
     {
-      "note": "task note two"
+      "note": "task note two 900001"
     }
   ]
 }
@@ -38,19 +38,19 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "title": "Relationship smoke task updated",
-  "description": "Updated from IntelliJ smoke file",
+  "title": "Relationship smoke task updated 900001",
+  "description": "Updated from IntelliJ smoke file 900001",
   "versions": [
     {
       "patch": {
-        "version": 3
+        "version": 900002
       }
     }
   ],
   "notes": [
     {
       "patch": {
-        "note": "task note added via patch"
+        "note": "task note added via patch 900001"
       }
     }
   ]
