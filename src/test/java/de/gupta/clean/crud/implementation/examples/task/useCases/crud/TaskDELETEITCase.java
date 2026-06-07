@@ -30,4 +30,12 @@ class TaskDELETEITCase extends AbstractTaskITCase
 		mockMvc.perform(get("/task/fetch/{id}", createdTask.id()))
 			   .andExpect(status().isNotFound());
 	}
+
+	@Test
+	@DisplayName("Should return 404 when deleting non-existent task")
+	void shouldReturn404WhenDeletingNonExistentTask() throws Exception
+	{
+		mockMvc.perform(delete("/task/delete/{id}", Long.MAX_VALUE))
+		       .andExpect(status().isNotFound());
+	}
 }
