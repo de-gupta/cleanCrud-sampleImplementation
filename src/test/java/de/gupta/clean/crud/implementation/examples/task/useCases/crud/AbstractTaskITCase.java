@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.gupta.clean.crud.implementation.examples.setup.IntegrationTest;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelCreate;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelResponse;
+import de.gupta.clean.crud.template.useCases.process.domain.model.task.DurableProcessTaskStatus;
+import de.gupta.clean.crud.template.useCases.process.infrastructure.persistence.model.DurableProcessTaskPersistenceModel;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -33,6 +36,9 @@ abstract class AbstractTaskITCase
 
 	@Autowired
 	protected ObjectMapper objectMapper;
+
+	@Autowired
+	protected EntityManager entityManager;
 
 	protected static void assertEquality(final TaskAPIModelCreate taskToCreate, final TaskAPIModelResponse createdTask)
 	{
@@ -110,5 +116,43 @@ abstract class AbstractTaskITCase
 		assertThat(lastSeen).isNotNull();
 		assertThat(lastSeen.title()).isEqualTo(expectedTitle);
 		return lastSeen;
+	}
+
+	protected DurableProcessTaskPersistenceModel waitForDurableProcessTaskStatus(
+			final Long taskId,
+			final DurableProcessTaskStatus expectedStatus) throws Exception
+	{
+		var deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(5);
+		DurableProcessTaskPersistenceModel lastSeen = null;
+
+		while (System.nanoTime() < deadline)
+		{
+			entityManager.clear();
+			lastSeen = findDurableProcessTask(taskId);
+			if (lastSeen != null && expectedStatus.equals(lastSeen.status()))
+			{
+				return lastSeen;
+			}
+			Thread.sleep(50);
+		}
+
+		assertThat(lastSeen).isNotNull();
+		assertThat(lastSeen.status()).isEqualTo(expectedStatus);
+		return lastSeen;
+	}
+
+	private DurableProcessTaskPersistenceModel findDurableProcessTask(final Long taskId)
+	{
+		var pattern = "%\"taskId\":" + taskId + "%";
+		var result = entityManager.createQuery(
+										  "select task from DurableProcessTaskPersistenceModel task " +
+												  "where task.payloadJson like :payloadPattern " +
+												  "order by task.createdAt desc",
+										  DurableProcessTaskPersistenceModel.class)
+		                          .setParameter("payloadPattern", pattern)
+		                          .setMaxResults(1)
+		                          .getResultList();
+
+		return result.isEmpty() ? null : result.getFirst();
 	}
 }

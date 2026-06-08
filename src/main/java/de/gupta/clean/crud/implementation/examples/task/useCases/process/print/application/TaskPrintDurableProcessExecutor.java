@@ -23,10 +23,14 @@ final class TaskPrintDurableProcessExecutor implements DurableProcessExecutor<Ta
 				payload.taskId(),
 				payload.title(),
 				context.attemptNumber());
+		if (payload.title().contains("[slow]"))
+		{
+			sleepFor(250);
+		}
 		if (payload.title().contains("[retry-once]") && !context.isRetryAttempt())
 		{
 			return DurableProcessOutcome.retryAt(
-					context.startedAt().plusMillis(100),
+					context.startedAt().plusMillis(200),
 					FailureClassification.TRANSIENT_TECHNICAL_FAILURE,
 					"Simulated transient print failure");
 		}
@@ -35,5 +39,18 @@ final class TaskPrintDurableProcessExecutor implements DurableProcessExecutor<Ta
 						payload.taskId(),
 						payload.title() + " [printed]")),
 				"PRINTED");
+	}
+
+	private void sleepFor(final long millis)
+	{
+		try
+		{
+			Thread.sleep(millis);
+		}
+		catch (InterruptedException e)
+		{
+			Thread.currentThread().interrupt();
+			throw new IllegalStateException("Interrupted while simulating slow durable process execution", e);
+		}
 	}
 }
