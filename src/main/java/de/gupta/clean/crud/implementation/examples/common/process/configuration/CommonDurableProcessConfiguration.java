@@ -1,12 +1,12 @@
 package de.gupta.clean.crud.implementation.examples.common.process.configuration;
 
-import de.gupta.clean.crud.implementation.examples.common.process.infrastructure.InMemoryDurableProcessTaskStore;
 import de.gupta.clean.crud.template.useCases.process.application.dispatch.ApplicationActionDispatcher;
 import de.gupta.clean.crud.template.useCases.process.application.execution.DefaultDurableProcessRunner;
 import de.gupta.clean.crud.template.useCases.process.application.execution.DurableProcessExecutionNudge;
 import de.gupta.clean.crud.template.useCases.process.application.execution.DurableProcessRunner;
 import de.gupta.clean.crud.template.useCases.process.application.execution.ImmediateDurableProcessExecutionNudge;
 import de.gupta.clean.crud.template.useCases.process.application.registration.*;
+import de.gupta.clean.crud.template.useCases.process.infrastructure.persistence.InMemoryDurableProcessTaskStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,7 +25,7 @@ public class CommonDurableProcessConfiguration
 	@Bean
 	public InMemoryDurableProcessTaskStore inMemoryDurableProcessTaskStore()
 	{
-		return new InMemoryDurableProcessTaskStore();
+		return InMemoryDurableProcessTaskStore.create();
 	}
 
 	@Bean
