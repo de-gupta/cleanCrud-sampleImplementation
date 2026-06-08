@@ -91,4 +91,24 @@ abstract class AbstractTaskITCase
 
 		return objectMapper.readValue(result.getResponse().getContentAsString(), TaskAPIModelResponse.class);
 	}
+
+	protected TaskAPIModelResponse waitForTaskTitle(final Long taskId, final String expectedTitle) throws Exception
+	{
+		var deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(5);
+		TaskAPIModelResponse lastSeen = null;
+
+		while (System.nanoTime() < deadline)
+		{
+			lastSeen = fetchTask(taskId);
+			if (expectedTitle.equals(lastSeen.title()))
+			{
+				return lastSeen;
+			}
+			Thread.sleep(50);
+		}
+
+		assertThat(lastSeen).isNotNull();
+		assertThat(lastSeen.title()).isEqualTo(expectedTitle);
+		return lastSeen;
+	}
 }

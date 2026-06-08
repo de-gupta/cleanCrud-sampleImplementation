@@ -5,6 +5,7 @@ import de.gupta.clean.crud.implementation.examples.task.useCases.process.print.d
 import de.gupta.clean.crud.template.useCases.process.application.execution.DurableProcessExecutionContext;
 import de.gupta.clean.crud.template.useCases.process.application.execution.DurableProcessExecutor;
 import de.gupta.clean.crud.template.useCases.process.domain.model.outcome.DurableProcessOutcome;
+import de.gupta.clean.crud.template.useCases.process.domain.model.outcome.FailureClassification;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,6 +23,13 @@ final class TaskPrintDurableProcessExecutor implements DurableProcessExecutor<Ta
 				payload.taskId(),
 				payload.title(),
 				context.attemptNumber());
+		if (payload.title().contains("[retry-once]") && !context.isRetryAttempt())
+		{
+			return DurableProcessOutcome.retryAt(
+					context.startedAt().plusMillis(100),
+					FailureClassification.TRANSIENT_TECHNICAL_FAILURE,
+					"Simulated transient print failure");
+		}
 		return DurableProcessOutcome.succeeded(
 				List.of(new AppendPrintedSuffixToTaskTitleCommand(
 						payload.taskId(),
