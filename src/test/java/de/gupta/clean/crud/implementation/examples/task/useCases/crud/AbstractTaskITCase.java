@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -78,6 +79,15 @@ abstract class AbstractTaskITCase
 										  .content(objectMapper.writeValueAsString(taskToCreate)))
 								  .andExpect(status().isCreated())
 								  .andReturn();
+
+		return objectMapper.readValue(result.getResponse().getContentAsString(), TaskAPIModelResponse.class);
+	}
+
+	protected TaskAPIModelResponse fetchTask(final Long taskId) throws Exception
+	{
+		MvcResult result = mockMvc.perform(get("/task/fetch/{id}", taskId))
+		                          .andExpect(status().isOk())
+		                          .andReturn();
 
 		return objectMapper.readValue(result.getResponse().getContentAsString(), TaskAPIModelResponse.class);
 	}
