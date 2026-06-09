@@ -34,6 +34,8 @@ class OpenApiDocsITCase
 		       .andExpect(jsonPath("$.paths['/note/delete/{id}'].delete.operationId").value("note.delete.id"))
 		       .andExpect(jsonPath("$.paths['/note/delete/batch'].delete.operationId").value("note.delete.batch"))
 		       .andExpect(jsonPath("$.paths['/task/fetch/{id}'].get.operationId").value("task.fetch.id"))
-		       .andExpect(jsonPath("$.paths['/task/fetch/ids'].get.operationId").value("task.fetch.ids"));
+		       .andExpect(jsonPath("$.paths['/task/fetch/ids'].get.operationId").value("task.fetch.ids"))
+		       .andExpect(jsonPath("$.paths['/task/update/{id}'].patch.operationId").value("task.update.id"))
+		       .andExpect(jsonPath("$.paths['/task/update/{id}'].put.operationId").value("task.replace.id"));
 	}
 }
