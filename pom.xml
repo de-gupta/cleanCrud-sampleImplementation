@@ -16,7 +16,7 @@
     <url>https://github.com/de-gupta/cleanCrud-sampleImplementation.git</url>
 
     <properties>
-        <cleanCrud.version>0.10.0</cleanCrud.version>
+        <cleanCrud.version>0.10.1-SNAPSHOT</cleanCrud.version>
         <test.jvm.args>-Djdk.attach.allowAttachSelf=true -XX:+EnableDynamicAgentLoading</test.jvm.args>
         <test.mode>medium</test.mode>
     </properties>

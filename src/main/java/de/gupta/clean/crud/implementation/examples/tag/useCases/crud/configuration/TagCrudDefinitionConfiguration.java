@@ -50,6 +50,10 @@ class TagCrudDefinitionConfiguration
 				.deletionPolicy(deletionPolicy)
 				.securityPolicy(securityPolicy)
 				.duplicateDefinition(duplicateDefinition)
+				.postCommitMutation(context -> System.out.printf(
+						"Tag post-commit mutation: kind=%s, id=%s%n",
+						context.kind(),
+						context.domainId()))
 				.build();
 	}
 }
