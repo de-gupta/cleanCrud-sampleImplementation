@@ -2,41 +2,22 @@ package de.gupta.clean.crud.implementation.examples.configuration.openAPI;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.springdoc.core.customizers.OperationCustomizer;
+import org.springdoc.core.customizers.GlobalOpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.AnnotatedMethod;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.HandlerMethod;
 
-import java.lang.annotation.Annotation;
-import java.util.*;
-import java.util.function.Function;
+import java.util.Arrays;
+import java.util.Locale;
 
 @Configuration
 @Profile("swagger")
 class OpenAPIConfiguration
 {
-	private static final Map<Class<? extends Annotation>, Function<Annotation, Collection<String>>>
-			HTTP_METHOD_EXTRACTORS = Map.of(
-			GetMapping.class, _ -> List.of("GET"),
-			PostMapping.class, _ -> List.of("POST"),
-			PutMapping.class, _ -> List.of("PUT"),
-			PatchMapping.class, _ -> List.of("PATCH"),
-			DeleteMapping.class, _ -> List.of("DELETE"),
-			RequestMapping.class, annotation ->
-			{
-				final RequestMethod[] methods = ((RequestMapping) annotation).method();
-				return methods.length == 0
-						? List.of("GET")
-						: Arrays.stream(methods).map(Enum::name).toList();
-			}
-	);
-
 	@Bean
 	public OpenAPI customOpenAPI()
 	{
@@ -46,42 +27,71 @@ class OpenAPIConfiguration
 	}
 
 	@Bean
-	public OperationCustomizer customizeOperationId()
+	public GlobalOpenApiCustomizer customizeOperationIds()
 	{
-		return (operation, handlerMethod) ->
+		return openAPI ->
 		{
-			final String controllerName = handlerMethod.getBeanType().getSimpleName()
-													   .replace("Controller", "")
-													   .replace("Impl", "")
-													   .replace("Rest", "")
-													   .replace("Spring", "");
-			final String methodName = handlerMethod.getMethod().getName();
-			final String methodType = getHttpMethodType(handlerMethod);
+			if (openAPI.getPaths() == null)
+			{
+				return;
+			}
 
-			operation.setOperationId(controllerName + "." + methodType + "." + methodName);
-			return operation;
+			openAPI.getPaths().forEach((path, pathItem) ->
+			{
+				if (pathItem == null)
+				{
+					return;
+				}
+
+				pathItem.readOperationsMap().forEach((httpMethod, operation) ->
+						applyOperationId(path, httpMethod, operation));
+			});
 		};
 	}
 
-	private String getHttpMethodType(final HandlerMethod handlerMethod)
+	private void applyOperationId(
+			final String path,
+			final PathItem.HttpMethod httpMethod,
+			final Operation operation)
 	{
-		return HTTP_METHOD_EXTRACTORS.entrySet().stream()
-									 .map(entry -> getHttpMethodTypes(handlerMethod, entry.getKey(), entry.getValue()))
-									 .flatMap(Collection::stream)
-									 .distinct()
-									 .reduce((a, b) -> a + "_" + b)
-									 .orElse("UNKNOWN");
+		if (operation == null)
+		{
+			return;
+		}
+
+		operation.setOperationId(operationIdFrom(path, httpMethod));
 	}
 
-	private Collection<String> getHttpMethodTypes(final HandlerMethod handlerMethod,
-												  final Class<? extends Annotation> annotationClass,
-												  final Function<Annotation, Collection<String>> extractor)
+	private String operationIdFrom(final String path, final PathItem.HttpMethod httpMethod)
 	{
-		return Optional.ofNullable(handlerMethod)
-					   .map(AnnotatedMethod::getMethod)
-					   .filter(m -> AnnotatedElementUtils.hasAnnotation(m, annotationClass))
-					   .map(m -> AnnotatedElementUtils.findMergedAnnotation(m, annotationClass))
-					   .map(extractor)
-					   .orElse(Collections.emptyList());
+		final var normalizedPath = normalizePath(path, httpMethod);
+		if (!normalizedPath.isBlank())
+		{
+			return normalizedPath;
+		}
+
+		return httpMethod.name().toLowerCase(Locale.ROOT);
+	}
+
+	private String normalizePath(final String path, final PathItem.HttpMethod httpMethod)
+	{
+		final String normalized = Arrays.stream(path.split("/"))
+		                                .map(String::trim)
+		                                .filter(segment -> !segment.isBlank())
+		                                .map(segment -> segment.replace("{", "").replace("}", ""))
+		                                .map(segment -> segment.replace('-', '.').replace('_', '.'))
+		                                .map(segment -> segment.replaceAll("\\.+", "."))
+		                                .map(segment -> segment.replaceAll("(^\\.|\\.$)", ""))
+		                                .filter(segment -> !segment.isBlank())
+		                                .reduce((left, right) -> left + "." + right)
+		                                .orElse("");
+
+		if (httpMethod == PathItem.HttpMethod.PUT)
+		{
+			return normalized.replace(".update.", ".replace.")
+			                 .replaceAll("\\.update$", ".replace");
+		}
+
+		return normalized;
 	}
 }
