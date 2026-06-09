@@ -4,11 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.gupta.clean.crud.implementation.examples.setup.IntegrationTest;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelCreate;
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelResponse;
+import de.gupta.clean.crud.template.useCases.process.domain.model.task.DurableProcessTaskStatus;
+import de.gupta.clean.crud.template.useCases.process.infrastructure.persistence.model.DurableProcessTaskPersistenceModel;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -16,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,6 +38,12 @@ abstract class AbstractTaskITCase
 
 	@Autowired
 	protected ObjectMapper objectMapper;
+
+	@Autowired
+	protected EntityManager entityManager;
+
+	@Autowired
+	protected PlatformTransactionManager transactionManager;
 
 	protected static void assertEquality(final TaskAPIModelCreate taskToCreate, final TaskAPIModelResponse createdTask)
 	{
@@ -80,5 +92,77 @@ abstract class AbstractTaskITCase
 								  .andReturn();
 
 		return objectMapper.readValue(result.getResponse().getContentAsString(), TaskAPIModelResponse.class);
+	}
+
+	protected TaskAPIModelResponse fetchTask(final Long taskId) throws Exception
+	{
+		MvcResult result = mockMvc.perform(get("/task/fetch/{id}", taskId))
+		                          .andExpect(status().isOk())
+		                          .andReturn();
+
+		return objectMapper.readValue(result.getResponse().getContentAsString(), TaskAPIModelResponse.class);
+	}
+
+	protected TaskAPIModelResponse waitForTaskTitle(final Long taskId, final String expectedTitle) throws Exception
+	{
+		var deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(5);
+		TaskAPIModelResponse lastSeen = null;
+
+		while (System.nanoTime() < deadline)
+		{
+			lastSeen = fetchTask(taskId);
+			if (expectedTitle.equals(lastSeen.title()))
+			{
+				return lastSeen;
+			}
+			Thread.sleep(50);
+		}
+
+		assertThat(lastSeen).isNotNull();
+		assertThat(lastSeen.title()).isEqualTo(expectedTitle);
+		return lastSeen;
+	}
+
+	protected DurableProcessTaskPersistenceModel waitForDurableProcessTaskStatus(
+			final Long taskId,
+			final DurableProcessTaskStatus expectedStatus) throws Exception
+	{
+		var deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(5);
+		DurableProcessTaskPersistenceModel lastSeen = null;
+
+		while (System.nanoTime() < deadline)
+		{
+			entityManager.clear();
+			lastSeen = findDurableProcessTask(taskId);
+			if (lastSeen != null && expectedStatus.equals(lastSeen.status()))
+			{
+				return lastSeen;
+			}
+			Thread.sleep(50);
+		}
+
+		assertThat(lastSeen).isNotNull();
+		assertThat(lastSeen.status()).isEqualTo(expectedStatus);
+		return lastSeen;
+	}
+
+	private DurableProcessTaskPersistenceModel findDurableProcessTask(final Long taskId)
+	{
+		var transactionTemplate = new TransactionTemplate(transactionManager);
+		transactionTemplate.setReadOnly(true);
+
+		return transactionTemplate.execute(_ ->
+		{
+			var result = entityManager.createQuery(
+											  "select task from DurableProcessTaskPersistenceModel task " +
+													  "where task.correlationId = :correlationId " +
+													  "order by task.createdAt desc",
+											  DurableProcessTaskPersistenceModel.class)
+			                          .setParameter("correlationId", "task-print:" + taskId)
+			                          .setMaxResults(1)
+			                          .getResultList();
+
+			return result.isEmpty() ? null : result.getFirst();
+		});
 	}
 }

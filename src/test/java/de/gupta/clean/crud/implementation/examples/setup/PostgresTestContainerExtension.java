@@ -7,7 +7,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-final class PostgresTestContainerExtension implements BeforeAllCallback
+public final class PostgresTestContainerExtension implements BeforeAllCallback
 {
 	@Container
 	private static final PostgreSQLContainer<?> POSTGRE_SQL_CONTAINER =
