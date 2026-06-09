@@ -7,14 +7,12 @@ import de.gupta.clean.crud.implementation.examples.tag.domain.model.dto.TagDomai
 import de.gupta.clean.crud.implementation.examples.tag.useCases.mutation.rename.domain.RenameTagMutation;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.definition.AggregateCrudDefinition;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.engine.AggregateLifecycleEngine;
-import de.gupta.clean.crud.template.useCases.crud.aggregate.engine.AggregateServiceSupportFactory;
 import de.gupta.clean.crud.template.useCases.mutation.aggregate.service.AggregateMutationServices;
 import de.gupta.clean.crud.template.useCases.mutation.api.application.MutationApplicationController;
 import de.gupta.clean.crud.template.useCases.mutation.api.application.MutationApplicationControllers;
 import de.gupta.clean.crud.template.useCases.mutation.application.service.MutationService;
 import de.gupta.clean.crud.template.useCases.mutation.domain.handler.MutationHandlerRegistry;
 import de.gupta.clean.crud.template.useCases.mutation.domain.handler.RegisteredMutationHandler;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.SourceAwareMutationPolicy;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,15 +44,9 @@ class TagMutationConfiguration
 			@Qualifier("tagAggregateCrudDefinition") final AggregateCrudDefinition<Long, TagDomainModel, TagDomainModelCreate, TagDomainModelUpdatePatch,
 					TagDomainModelResponse> definition,
 			final AggregateLifecycleEngine aggregateLifecycleEngine,
-			@Qualifier("tagMutationHandlerRegistry") final MutationHandlerRegistry<TagDomainModel> handlerRegistry,
-			@Qualifier("tagSourceAwareMutationPolicy") final SourceAwareMutationPolicy<TagDomainModel> sourceAwareMutationPolicy)
+			@Qualifier("tagMutationHandlerRegistry") final MutationHandlerRegistry<TagDomainModel> handlerRegistry)
 	{
-		return AggregateMutationServices.mutationService(
-				definition,
-				aggregateLifecycleEngine,
-				handlerRegistry,
-				AggregateServiceSupportFactory.definitionGuard(),
-				sourceAwareMutationPolicy);
+		return AggregateMutationServices.mutationService(definition, aggregateLifecycleEngine, handlerRegistry);
 	}
 
 	@Bean

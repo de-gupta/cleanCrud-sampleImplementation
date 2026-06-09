@@ -4,6 +4,7 @@ import de.gupta.clean.crud.implementation.examples.tag.domain.model.TagDomainMod
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.dto.TagDomainModelCreate;
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.dto.TagDomainModelResponse;
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.dto.TagDomainModelUpdatePatch;
+import de.gupta.clean.crud.implementation.examples.tag.useCases.crud.configuration.policy.TagMutationPolicyAwareCrudDefinition;
 import de.gupta.clean.crud.template.domain.mapping.fetch.DomainResponseBuilder;
 import de.gupta.clean.crud.template.domain.mapping.save.DomainModelBuilder;
 import de.gupta.clean.crud.template.domain.mapping.update.DomainModelPatcher;
@@ -16,6 +17,11 @@ import de.gupta.clean.crud.template.useCases.crud.aggregate.builder.AggregateCru
 import de.gupta.clean.crud.template.useCases.crud.aggregate.definition.AggregateCrudDefinition;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateMutationPort;
+import de.gupta.clean.crud.template.useCases.mutation.domain.policy.access.AccessPolicy;
+import de.gupta.clean.crud.template.useCases.mutation.domain.policy.consistency.ExternalConsistencyPolicy;
+import de.gupta.clean.crud.template.useCases.mutation.domain.policy.invariant.DomainInvariantPolicy;
+import de.gupta.clean.crud.template.useCases.mutation.domain.policy.profile.MutationPolicyProfileResolver;
+import de.gupta.clean.crud.template.useCases.mutation.domain.policy.transition.MutationTransitionPolicy;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,9 +42,14 @@ class TagCrudDefinitionConfiguration
 			@Qualifier("tagPatchPolicy") final PatchPolicy<TagDomainModel> patchPolicy,
 			@Qualifier("tagDeletionPolicy") final DeletionPolicy<TagDomainModel> deletionPolicy,
 			@Qualifier("tagDomainSecurityPolicy") final DomainSecurityPolicy<TagDomainModel> securityPolicy,
-			@Qualifier("tagDuplicateDefinition") final DuplicateDefinition<TagDomainModel> duplicateDefinition)
+			@Qualifier("tagDuplicateDefinition") final DuplicateDefinition<TagDomainModel> duplicateDefinition,
+			@Qualifier("tagMutationPolicyProfileResolver") final MutationPolicyProfileResolver mutationPolicyProfileResolver,
+			@Qualifier("tagMutationAccessPolicy") final AccessPolicy<TagDomainModel> mutationAccessPolicy,
+			@Qualifier("tagMutationTransitionPolicy") final MutationTransitionPolicy<TagDomainModel> mutationTransitionPolicy,
+			@Qualifier("tagDomainInvariantPolicy") final DomainInvariantPolicy<TagDomainModel> domainInvariantPolicy,
+			@Qualifier("tagExternalConsistencyPolicy") final ExternalConsistencyPolicy<TagDomainModel> externalConsistencyPolicy)
 	{
-		return AggregateCrudDefinitions
+		var baseDefinition = AggregateCrudDefinitions
 				.<Long, TagDomainModel, TagDomainModelCreate, TagDomainModelUpdatePatch, TagDomainModelResponse>aggregateCrudDefinition()
 				.mutationPort(mutationPort)
 				.fetchPort(fetchPort)
@@ -55,5 +66,13 @@ class TagCrudDefinitionConfiguration
 						context.kind(),
 						context.domainId()))
 				.build();
+
+		return new TagMutationPolicyAwareCrudDefinition(
+				baseDefinition,
+				mutationPolicyProfileResolver,
+				mutationAccessPolicy,
+				mutationTransitionPolicy,
+				domainInvariantPolicy,
+				externalConsistencyPolicy);
 	}
 }

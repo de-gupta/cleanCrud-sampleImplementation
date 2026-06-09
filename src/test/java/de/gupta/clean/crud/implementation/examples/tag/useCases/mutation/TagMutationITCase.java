@@ -4,6 +4,7 @@ import de.gupta.clean.crud.implementation.examples.tag.domain.model.TagDomainMod
 import de.gupta.clean.crud.implementation.examples.tag.useCases.mutation.rename.domain.RenameTagMutation;
 import de.gupta.clean.crud.template.domain.model.exceptions.security.AccessDeniedException;
 import de.gupta.clean.crud.template.useCases.mutation.api.application.MutationApplicationController;
+import de.gupta.clean.crud.template.useCases.mutation.domain.policy.quarantine.QuarantinedMutationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,28 @@ class TagMutationITCase extends AbstractTagITCase
 		var fetched = fetchTag(createdTag.id());
 
 		assertThat(updated.model().name()).isEqualTo(managedName);
+		assertThat(fetched.name()).isEqualTo(managedName);
+	}
+
+	@Test
+	@Tag(FAST)
+	@DisplayName("Should quarantine authoritative events that try to demote managed tags")
+	void shouldQuarantineManagedNamespaceDemotion() throws Exception
+	{
+		var createdTag = createTag(uniqueTagName("tag-quarantine"));
+		var managedName = "managed:" + uniqueTagName("registry");
+
+		tagMutationApplicationController.applyAuthoritativeExternalEvent(
+				createdTag.id(),
+				new RenameTagMutation(managedName));
+
+		assertThatThrownBy(() -> tagMutationApplicationController.applyAuthoritativeExternalEvent(
+				createdTag.id(),
+				new RenameTagMutation(uniqueTagName("plain"))))
+				.isInstanceOf(QuarantinedMutationException.class)
+				.hasMessageContaining("quarantined");
+
+		var fetched = fetchTag(createdTag.id());
 		assertThat(fetched.name()).isEqualTo(managedName);
 	}
 }
