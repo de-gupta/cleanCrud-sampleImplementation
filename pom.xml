@@ -16,9 +16,7 @@
     <url>https://github.com/de-gupta/cleanCrud-sampleImplementation.git</url>
 
     <properties>
-        <argLine />
-        <cleanCrud.version>0.9.1-SNAPSHOT</cleanCrud.version>
-        <it.tag.expression>fast | medium</it.tag.expression>
+        <cleanCrud.version>0.10.0</cleanCrud.version>
         <test.jvm.args>-Djdk.attach.allowAttachSelf=true -XX:+EnableDynamicAgentLoading</test.jvm.args>
         <test.mode>medium</test.mode>
     </properties>
@@ -116,9 +114,6 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <argLine>${argLine} ${test.jvm.args}</argLine>
-                    <properties>
-                        <configurationParameters>junit.jupiter.tags.include = ${it.tag.expression}</configurationParameters>
-                    </properties>
                     <systemPropertyVariables>
                         <testMode>${test.mode}</testMode>
                     </systemPropertyVariables>
@@ -131,24 +126,12 @@
         <profile>
             <id>fast-it</id>
             <properties>
-                <it.tag.expression>fast</it.tag.expression>
                 <test.mode>fast</test.mode>
-            </properties>
-        </profile>
-        <profile>
-            <id>medium-it</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <it.tag.expression>fast | medium</it.tag.expression>
-                <test.mode>medium</test.mode>
             </properties>
         </profile>
         <profile>
             <id>full-it</id>
             <properties>
-                <it.tag.expression>fast | medium | full</it.tag.expression>
                 <test.mode>full</test.mode>
             </properties>
         </profile>
