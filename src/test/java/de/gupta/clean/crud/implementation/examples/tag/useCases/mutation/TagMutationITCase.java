@@ -4,6 +4,7 @@ import de.gupta.clean.crud.implementation.examples.tag.domain.model.TagDomainMod
 import de.gupta.clean.crud.implementation.examples.tag.useCases.mutation.rename.domain.RenameTagMutation;
 import de.gupta.clean.crud.template.domain.model.exceptions.security.AccessDeniedException;
 import de.gupta.clean.crud.template.useCases.mutation.api.application.MutationApplicationController;
+import de.gupta.clean.crud.template.useCases.mutation.quarantine.application.MutationQuarantineService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,9 @@ class TagMutationITCase extends AbstractTagITCase
 	@Autowired
 	@Qualifier("tagMutationApplicationController")
 	private MutationApplicationController<Long, TagDomainModel> tagMutationApplicationController;
+
+	@Autowired
+	private MutationQuarantineService mutationQuarantineService;
 
 	@Test
 	@Tag(FAST)
@@ -78,7 +82,14 @@ class TagMutationITCase extends AbstractTagITCase
 
 		assertThat(result.quarantined()).isTrue();
 		assertThat(result.quarantineRequest()).isPresent();
+		assertThat(result.quarantineRequest().orElseThrow().quarantineId()).isPresent();
 		assertThat(result.quarantineRequest().orElseThrow().violations()).hasSize(1);
+		var quarantineId = result.quarantineRequest().orElseThrow().quarantineId().orElseThrow();
+		assertThat(mutationQuarantineService.findById(quarantineId)).isPresent();
+		assertThat(fetchMutationQuarantine(quarantineId.value())).contains(quarantineId.value())
+		                                                         .contains("OPEN")
+		                                                         .contains(
+																		 "Managed namespace demotion requires operator review");
 
 		var fetched = fetchTag(createdTag.id());
 		assertThat(fetched.name()).isEqualTo(managedName);
