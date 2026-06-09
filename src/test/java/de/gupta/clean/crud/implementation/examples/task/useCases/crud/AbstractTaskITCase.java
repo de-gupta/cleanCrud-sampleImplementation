@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -39,6 +41,9 @@ abstract class AbstractTaskITCase
 
 	@Autowired
 	protected EntityManager entityManager;
+
+	@Autowired
+	protected PlatformTransactionManager transactionManager;
 
 	protected static void assertEquality(final TaskAPIModelCreate taskToCreate, final TaskAPIModelResponse createdTask)
 	{
@@ -143,16 +148,21 @@ abstract class AbstractTaskITCase
 
 	private DurableProcessTaskPersistenceModel findDurableProcessTask(final Long taskId)
 	{
-		var pattern = "%\"taskId\":" + taskId + "%";
-		var result = entityManager.createQuery(
-										  "select task from DurableProcessTaskPersistenceModel task " +
-												  "where task.payloadJson like :payloadPattern " +
-												  "order by task.createdAt desc",
-										  DurableProcessTaskPersistenceModel.class)
-		                          .setParameter("payloadPattern", pattern)
-		                          .setMaxResults(1)
-		                          .getResultList();
+		var transactionTemplate = new TransactionTemplate(transactionManager);
+		transactionTemplate.setReadOnly(true);
 
-		return result.isEmpty() ? null : result.getFirst();
+		return transactionTemplate.execute(_ ->
+		{
+			var result = entityManager.createQuery(
+											  "select task from DurableProcessTaskPersistenceModel task " +
+													  "where task.correlationId = :correlationId " +
+													  "order by task.createdAt desc",
+											  DurableProcessTaskPersistenceModel.class)
+			                          .setParameter("correlationId", "task-print:" + taskId)
+			                          .setMaxResults(1)
+			                          .getResultList();
+
+			return result.isEmpty() ? null : result.getFirst();
+		});
 	}
 }
