@@ -11,6 +11,7 @@ import de.gupta.clean.crud.template.useCases.operation.mutation.aggregate.servic
 import de.gupta.clean.crud.template.useCases.operation.mutation.api.application.MutationApplicationController;
 import de.gupta.clean.crud.template.useCases.operation.mutation.api.application.MutationApplicationControllers;
 import de.gupta.clean.crud.template.useCases.operation.mutation.application.service.MutationService;
+import de.gupta.clean.crud.template.useCases.operation.mutation.application.service.QuarantinableMutationService;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.AggregateMutationHandler;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.MutationHandlerRegistry;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.RegisteredMutationHandler;
@@ -41,13 +42,14 @@ class TaskMutationConfiguration
 
 	@Bean
 	@Qualifier("taskMutationService")
-	MutationService<Long, TaskDomainModel> taskMutationService(
+	QuarantinableMutationService<Long, TaskDomainModel> taskMutationService(
 			@Qualifier("taskAggregateCrudDefinition") final AggregateCrudDefinition<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch,
 					TaskDomainModelResponse> definition,
 			final AggregateLifecycleEngine aggregateLifecycleEngine,
 			@Qualifier("taskMutationHandlerRegistry") final MutationHandlerRegistry<TaskDomainModel> handlerRegistry)
 	{
-		return AggregateMutationServices.mutationService(definition, aggregateLifecycleEngine, handlerRegistry);
+		return AggregateMutationServices.mutationService("task-mutation", definition, aggregateLifecycleEngine,
+				handlerRegistry);
 	}
 
 	@Bean

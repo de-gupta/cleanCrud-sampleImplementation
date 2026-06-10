@@ -72,6 +72,7 @@ class TaskGETITCase extends AbstractTaskITCase
 
 		for (int pageSize : pageSizes)
 		{
+			int expectedFirstPageElements = Math.min(pageSize, taskCount);
 			ResultActions firstPageResult = mockMvc.perform(get("/task/fetch")
 					.param("page", "0")
 					.param("size", String.valueOf(pageSize)));
@@ -79,9 +80,10 @@ class TaskGETITCase extends AbstractTaskITCase
 			firstPageResult
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.content").isArray())
-					.andExpect(jsonPath("$.content.length()").value(pageSize))
-					.andExpect(jsonPath("$.numberOfElements").value(pageSize));
+					.andExpect(jsonPath("$.content.length()").value(expectedFirstPageElements))
+					.andExpect(jsonPath("$.numberOfElements").value(expectedFirstPageElements));
 
+			int expectedSecondPageElements = Math.max(0, Math.min(pageSize, taskCount - pageSize));
 			ResultActions secondPageResult = mockMvc.perform(get("/task/fetch")
 					.param("page", "1")
 					.param("size", String.valueOf(pageSize)));
@@ -89,7 +91,8 @@ class TaskGETITCase extends AbstractTaskITCase
 			secondPageResult
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.content").isArray())
-					.andExpect(jsonPath("$.content.length()").value(greaterThanOrEqualTo(1)));
+					.andExpect(jsonPath("$.content.length()").value(expectedSecondPageElements))
+					.andExpect(jsonPath("$.numberOfElements").value(expectedSecondPageElements));
 		}
 	}
 

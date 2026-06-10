@@ -11,6 +11,7 @@ import de.gupta.clean.crud.template.useCases.operation.mutation.aggregate.servic
 import de.gupta.clean.crud.template.useCases.operation.mutation.api.application.MutationApplicationController;
 import de.gupta.clean.crud.template.useCases.operation.mutation.api.application.MutationApplicationControllers;
 import de.gupta.clean.crud.template.useCases.operation.mutation.application.service.MutationService;
+import de.gupta.clean.crud.template.useCases.operation.mutation.application.service.QuarantinableMutationService;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.MutationHandlerRegistry;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.RegisteredMutationHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,13 +41,14 @@ class TagMutationConfiguration
 
 	@Bean
 	@Qualifier("tagMutationService")
-	MutationService<Long, TagDomainModel> tagMutationService(
+	QuarantinableMutationService<Long, TagDomainModel> tagMutationService(
 			@Qualifier("tagAggregateCrudDefinition") final AggregateCrudDefinition<Long, TagDomainModel, TagDomainModelCreate, TagDomainModelUpdatePatch,
 					TagDomainModelResponse> definition,
 			final AggregateLifecycleEngine aggregateLifecycleEngine,
 			@Qualifier("tagMutationHandlerRegistry") final MutationHandlerRegistry<TagDomainModel> handlerRegistry)
 	{
-		return AggregateMutationServices.mutationService(definition, aggregateLifecycleEngine, handlerRegistry);
+		return AggregateMutationServices.mutationService("tag-mutation", definition, aggregateLifecycleEngine,
+				handlerRegistry);
 	}
 
 	@Bean

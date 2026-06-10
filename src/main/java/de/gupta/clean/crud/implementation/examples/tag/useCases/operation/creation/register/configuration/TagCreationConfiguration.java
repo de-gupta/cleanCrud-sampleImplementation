@@ -11,6 +11,7 @@ import de.gupta.clean.crud.template.useCases.operation.creation.aggregate.servic
 import de.gupta.clean.crud.template.useCases.operation.creation.api.application.CreationApplicationController;
 import de.gupta.clean.crud.template.useCases.operation.creation.api.application.CreationApplicationControllers;
 import de.gupta.clean.crud.template.useCases.operation.creation.application.service.CreationService;
+import de.gupta.clean.crud.template.useCases.operation.creation.application.service.QuarantinableCreationService;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.CreationHandler;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.CreationHandlerRegistry;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.RegisteredCreationHandler;
@@ -41,13 +42,14 @@ class TagCreationConfiguration
 
 	@Bean
 	@Qualifier("tagCreationService")
-	CreationService<Long, TagDomainModel> tagCreationService(
+	QuarantinableCreationService<Long, TagDomainModel> tagCreationService(
 			@Qualifier("tagAggregateCrudDefinition") final AggregateCrudDefinition<Long, TagDomainModel, TagDomainModelCreate, TagDomainModelUpdatePatch,
 					TagDomainModelResponse> definition,
 			final AggregateLifecycleEngine aggregateLifecycleEngine,
 			@Qualifier("tagCreationHandlerRegistry") final CreationHandlerRegistry<TagDomainModelCreate> handlerRegistry)
 	{
-		return AggregateCreationServices.creationService(definition, aggregateLifecycleEngine, handlerRegistry);
+		return AggregateCreationServices.creationService("tag-creation", definition, aggregateLifecycleEngine,
+				handlerRegistry);
 	}
 
 	@Bean

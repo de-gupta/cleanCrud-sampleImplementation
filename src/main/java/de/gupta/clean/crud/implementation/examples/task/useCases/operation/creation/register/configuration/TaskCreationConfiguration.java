@@ -11,6 +11,7 @@ import de.gupta.clean.crud.template.useCases.operation.creation.aggregate.servic
 import de.gupta.clean.crud.template.useCases.operation.creation.api.application.CreationApplicationController;
 import de.gupta.clean.crud.template.useCases.operation.creation.api.application.CreationApplicationControllers;
 import de.gupta.clean.crud.template.useCases.operation.creation.application.service.CreationService;
+import de.gupta.clean.crud.template.useCases.operation.creation.application.service.QuarantinableCreationService;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.CreationHandler;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.CreationHandlerRegistry;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.RegisteredCreationHandler;
@@ -41,13 +42,14 @@ class TaskCreationConfiguration
 
 	@Bean
 	@Qualifier("taskCreationService")
-	CreationService<Long, TaskDomainModel> taskCreationService(
+	QuarantinableCreationService<Long, TaskDomainModel> taskCreationService(
 			@Qualifier("taskAggregateCrudDefinition") final AggregateCrudDefinition<Long, TaskDomainModel, TaskDomainModelCreate, TaskDomainModelUpdatePatch,
 					TaskDomainModelResponse> definition,
 			final AggregateLifecycleEngine aggregateLifecycleEngine,
 			@Qualifier("taskCreationHandlerRegistry") final CreationHandlerRegistry<TaskDomainModelCreate> handlerRegistry)
 	{
-		return AggregateCreationServices.creationService(definition, aggregateLifecycleEngine, handlerRegistry);
+		return AggregateCreationServices.creationService("task-creation", definition, aggregateLifecycleEngine,
+				handlerRegistry);
 	}
 
 	@Bean
