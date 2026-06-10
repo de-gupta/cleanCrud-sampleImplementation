@@ -1,10 +1,10 @@
-package de.gupta.clean.crud.implementation.examples.tag.useCases.mutation;
+package de.gupta.clean.crud.implementation.examples.tag.useCases.operation.mutation;
 
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.TagDomainModel;
-import de.gupta.clean.crud.implementation.examples.tag.useCases.mutation.rename.domain.RenameTagMutation;
+import de.gupta.clean.crud.implementation.examples.tag.useCases.operation.mutation.rename.domain.RenameTagMutation;
 import de.gupta.clean.crud.template.domain.model.exceptions.security.AccessDeniedException;
-import de.gupta.clean.crud.template.useCases.mutation.api.application.MutationApplicationController;
-import de.gupta.clean.crud.template.useCases.mutation.quarantine.application.MutationQuarantineService;
+import de.gupta.clean.crud.template.useCases.operation.mutation.api.application.MutationApplicationController;
+import de.gupta.clean.crud.template.useCases.operation.mutation.quarantine.application.MutationQuarantineService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Tag Mutation Tests")
-class TagMutationITCase extends AbstractTagITCase
+class TagMutationITCase
+		extends de.gupta.clean.crud.implementation.examples.tag.useCases.operation.mutation.AbstractTagITCase
 {
 	@Autowired
 	@Qualifier("tagMutationApplicationController")

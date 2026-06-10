@@ -17,16 +17,16 @@ import de.gupta.clean.crud.template.useCases.crud.aggregate.builder.AggregateCru
 import de.gupta.clean.crud.template.useCases.crud.aggregate.definition.AggregateCrudDefinition;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateMutationPort;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.access.IncantationAccessPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.consistency.IncantationExternalConsistencyPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.creation.IncantationCreationPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.invariant.IncantationInvariantPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.profile.IncantationPolicyProfileResolver;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.access.AccessPolicy;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.consistency.ExternalConsistencyPolicy;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.invariant.DomainInvariantPolicy;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.profile.MutationPolicyProfileResolver;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.transition.MutationTransitionPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.access.CreationAccessPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.consistency.CreationExternalConsistencyPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.creation.CreationPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.invariant.CreationInvariantPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.profile.CreationPolicyProfileResolver;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.access.AccessPolicy;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.consistency.ExternalConsistencyPolicy;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.invariant.DomainInvariantPolicy;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.profile.MutationPolicyProfileResolver;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.transition.MutationTransitionPolicy;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,11 +53,11 @@ class TagCrudDefinitionConfiguration
 			@Qualifier("tagMutationTransitionPolicy") final MutationTransitionPolicy<TagDomainModel> mutationTransitionPolicy,
 			@Qualifier("tagDomainInvariantPolicy") final DomainInvariantPolicy<TagDomainModel> domainInvariantPolicy,
 			@Qualifier("tagExternalConsistencyPolicy") final ExternalConsistencyPolicy<TagDomainModel> externalConsistencyPolicy,
-			@Qualifier("tagIncantationPolicyProfileResolver") final IncantationPolicyProfileResolver incantationPolicyProfileResolver,
-			@Qualifier("tagIncantationAccessPolicy") final IncantationAccessPolicy<TagDomainModel> incantationAccessPolicy,
-			@Qualifier("tagIncantationCreationPolicy") final IncantationCreationPolicy<TagDomainModel> incantationCreationPolicy,
-			@Qualifier("tagIncantationInvariantPolicy") final IncantationInvariantPolicy<TagDomainModel> incantationInvariantPolicy,
-			@Qualifier("tagIncantationExternalConsistencyPolicy") final IncantationExternalConsistencyPolicy<TagDomainModel> incantationExternalConsistencyPolicy)
+			@Qualifier("tagCreationPolicyProfileResolver") final CreationPolicyProfileResolver creationPolicyProfileResolver,
+			@Qualifier("tagCreationAccessPolicy") final CreationAccessPolicy<TagDomainModel> creationAccessPolicy,
+			@Qualifier("tagCreationPolicy") final CreationPolicy<TagDomainModel> creationPolicy,
+			@Qualifier("tagCreationInvariantPolicy") final CreationInvariantPolicy<TagDomainModel> creationInvariantPolicy,
+			@Qualifier("tagCreationExternalConsistencyPolicy") final CreationExternalConsistencyPolicy<TagDomainModel> creationExternalConsistencyPolicy)
 	{
 		var baseDefinition = AggregateCrudDefinitions
 				.<Long, TagDomainModel, TagDomainModelCreate, TagDomainModelUpdatePatch, TagDomainModelResponse>aggregateCrudDefinition()
@@ -84,10 +84,10 @@ class TagCrudDefinitionConfiguration
 				mutationTransitionPolicy,
 				domainInvariantPolicy,
 				externalConsistencyPolicy,
-				incantationPolicyProfileResolver,
-				incantationAccessPolicy,
-				incantationCreationPolicy,
-				incantationInvariantPolicy,
-				incantationExternalConsistencyPolicy);
+				creationPolicyProfileResolver,
+				creationAccessPolicy,
+				creationPolicy,
+				creationInvariantPolicy,
+				creationExternalConsistencyPolicy);
 	}
 }

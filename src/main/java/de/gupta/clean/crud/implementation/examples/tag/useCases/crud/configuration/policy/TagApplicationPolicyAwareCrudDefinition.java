@@ -17,16 +17,16 @@ import de.gupta.clean.crud.template.useCases.crud.aggregate.definition.PostCommi
 import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateMutationPort;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.relationship.AggregateRelationshipDefinitionContract;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.access.IncantationAccessPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.consistency.IncantationExternalConsistencyPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.creation.IncantationCreationPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.invariant.IncantationInvariantPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.profile.IncantationPolicyProfileResolver;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.access.AccessPolicy;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.consistency.ExternalConsistencyPolicy;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.invariant.DomainInvariantPolicy;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.profile.MutationPolicyProfileResolver;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.transition.MutationTransitionPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.access.CreationAccessPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.consistency.CreationExternalConsistencyPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.creation.CreationPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.invariant.CreationInvariantPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.profile.CreationPolicyProfileResolver;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.access.AccessPolicy;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.consistency.ExternalConsistencyPolicy;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.invariant.DomainInvariantPolicy;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.profile.MutationPolicyProfileResolver;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.transition.MutationTransitionPolicy;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -39,11 +39,11 @@ public record TagApplicationPolicyAwareCrudDefinition(
 		MutationTransitionPolicy<TagDomainModel> mutationTransitionPolicy,
 		DomainInvariantPolicy<TagDomainModel> domainInvariantPolicy,
 		ExternalConsistencyPolicy<TagDomainModel> externalConsistencyPolicy,
-		IncantationPolicyProfileResolver incantationPolicyProfileResolver,
-		IncantationAccessPolicy<TagDomainModel> incantationAccessPolicy,
-		IncantationCreationPolicy<TagDomainModel> incantationCreationPolicy,
-		IncantationInvariantPolicy<TagDomainModel> incantationInvariantPolicy,
-		IncantationExternalConsistencyPolicy<TagDomainModel> incantationExternalConsistencyPolicy)
+		CreationPolicyProfileResolver creationPolicyProfileResolver,
+		CreationAccessPolicy<TagDomainModel> creationAccessPolicy,
+		CreationPolicy<TagDomainModel> creationPolicy,
+		CreationInvariantPolicy<TagDomainModel> creationInvariantPolicy,
+		CreationExternalConsistencyPolicy<TagDomainModel> creationExternalConsistencyPolicy)
 		implements AggregateCrudDefinition<Long, TagDomainModel, TagDomainModelCreate, TagDomainModelUpdatePatch,
 		TagDomainModelResponse>
 {
@@ -55,11 +55,11 @@ public record TagApplicationPolicyAwareCrudDefinition(
 		Objects.requireNonNull(mutationTransitionPolicy, "mutationTransitionPolicy");
 		Objects.requireNonNull(domainInvariantPolicy, "domainInvariantPolicy");
 		Objects.requireNonNull(externalConsistencyPolicy, "externalConsistencyPolicy");
-		Objects.requireNonNull(incantationPolicyProfileResolver, "incantationPolicyProfileResolver");
-		Objects.requireNonNull(incantationAccessPolicy, "incantationAccessPolicy");
-		Objects.requireNonNull(incantationCreationPolicy, "incantationCreationPolicy");
-		Objects.requireNonNull(incantationInvariantPolicy, "incantationInvariantPolicy");
-		Objects.requireNonNull(incantationExternalConsistencyPolicy, "incantationExternalConsistencyPolicy");
+		Objects.requireNonNull(creationPolicyProfileResolver, "creationPolicyProfileResolver");
+		Objects.requireNonNull(creationAccessPolicy, "creationAccessPolicy");
+		Objects.requireNonNull(creationPolicy, "creationPolicy");
+		Objects.requireNonNull(creationInvariantPolicy, "creationInvariantPolicy");
+		Objects.requireNonNull(creationExternalConsistencyPolicy, "creationExternalConsistencyPolicy");
 	}
 
 	@Override

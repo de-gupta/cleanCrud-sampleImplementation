@@ -1,18 +1,18 @@
-package de.gupta.clean.crud.implementation.examples.tag.useCases.incantation.register.configuration.policy;
+package de.gupta.clean.crud.implementation.examples.tag.useCases.operation.creation.register.configuration.policy;
 
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.TagDomainModel;
 import de.gupta.clean.crud.implementation.examples.tag.infrastructure.persistence.repository.TagJpaRepository;
 import de.gupta.clean.crud.template.domain.service.crud.policy.InsertionPolicy;
 import de.gupta.clean.crud.template.domain.service.security.DomainSecurityPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.model.IncantationSource;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.access.IncantationAccessPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.consistency.IncantationExternalConsistencyPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.creation.IncantationCreationPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.invariant.IncantationInvariantPolicy;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.profile.IncantationPolicyProfile;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.profile.IncantationPolicyProfileResolver;
-import de.gupta.clean.crud.template.useCases.incantation.domain.policy.violation.IncantationViolationHandling;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.invariant.InvariantViolation;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.access.CreationAccessPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.consistency.CreationExternalConsistencyPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.creation.CreationPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.invariant.CreationInvariantPolicy;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.profile.CreationPolicyProfile;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.profile.CreationPolicyProfileResolver;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.violation.CreationViolationHandling;
+import de.gupta.clean.crud.template.useCases.operation.domain.model.OperationSource;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.invariant.InvariantViolation;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,42 +22,42 @@ import java.util.List;
 import java.util.Optional;
 
 @Configuration
-class TagIncantationPolicyConfiguration
+class TagCreationPolicyConfiguration
 {
 	private static final String MANAGED_PREFIX = "managed:";
 	private static final int SOFT_NAME_LENGTH_LIMIT = 40;
 	private static final String DUPLICATE_MESSAGE = "A tag with the same name already exists";
 
 	@Bean
-	@Qualifier("tagIncantationPolicyProfileResolver")
-	IncantationPolicyProfileResolver tagIncantationPolicyProfileResolver()
+	@Qualifier("tagCreationPolicyProfileResolver")
+	CreationPolicyProfileResolver tagCreationPolicyProfileResolver()
 	{
 		return source -> switch (source)
 		{
-			case USER_INTENT -> IncantationPolicyProfile.userIntent();
+			case USER_INTENT -> CreationPolicyProfile.userIntent();
 			case INTERNAL_COMMAND, PROCESS_EMITTED_ACTION, ADMINISTRATIVE_REPLAY ->
-					IncantationPolicyProfile.internalCommand();
-			case AUTHORITATIVE_EXTERNAL_EVENT -> new IncantationPolicyProfile(
-					IncantationViolationHandling.ALLOW,
-					IncantationViolationHandling.REJECT,
-					IncantationViolationHandling.QUARANTINE,
-					IncantationViolationHandling.ALLOW,
-					IncantationViolationHandling.QUARANTINE);
+					CreationPolicyProfile.internalCommand();
+			case AUTHORITATIVE_EXTERNAL_EVENT -> new CreationPolicyProfile(
+					CreationViolationHandling.ALLOW,
+					CreationViolationHandling.REJECT,
+					CreationViolationHandling.QUARANTINE,
+					CreationViolationHandling.ALLOW,
+					CreationViolationHandling.QUARANTINE);
 		};
 	}
 
 	@Bean
-	@Qualifier("tagIncantationAccessPolicy")
-	IncantationAccessPolicy<TagDomainModel> tagIncantationAccessPolicy(
+	@Qualifier("tagCreationAccessPolicy")
+	CreationAccessPolicy<TagDomainModel> tagCreationAccessPolicy(
 			@Qualifier("tagDomainSecurityPolicy") final DomainSecurityPolicy<TagDomainModel> securityPolicy)
 	{
 		return (source, afterModel) ->
 		{
-			if (source == IncantationSource.USER_INTENT && !securityPolicy.isAccessAllowed(afterModel))
+			if (source == OperationSource.USER_INTENT && !securityPolicy.isAccessAllowed(afterModel))
 			{
 				throw new IllegalStateException("Access not allowed");
 			}
-			if (source == IncantationSource.USER_INTENT && afterModel.name().startsWith(MANAGED_PREFIX))
+			if (source == OperationSource.USER_INTENT && afterModel.name().startsWith(MANAGED_PREFIX))
 			{
 				throw new IllegalStateException("Only authoritative external events may create managed tag names");
 			}
@@ -65,8 +65,8 @@ class TagIncantationPolicyConfiguration
 	}
 
 	@Bean
-	@Qualifier("tagIncantationCreationPolicy")
-	IncantationCreationPolicy<TagDomainModel> tagIncantationCreationPolicy(
+	@Qualifier("tagCreationPolicy")
+	CreationPolicy<TagDomainModel> tagCreationPolicy(
 			@Qualifier("tagInsertionPolicy") final InsertionPolicy<TagDomainModel> insertionPolicy,
 			final TagJpaRepository repository)
 	{
@@ -89,8 +89,8 @@ class TagIncantationPolicyConfiguration
 	}
 
 	@Bean
-	@Qualifier("tagIncantationInvariantPolicy")
-	IncantationInvariantPolicy<TagDomainModel> tagIncantationInvariantPolicy()
+	@Qualifier("tagCreationInvariantPolicy")
+	CreationInvariantPolicy<TagDomainModel> tagCreationInvariantPolicy()
 	{
 		return (_, afterModel) ->
 		{
@@ -108,12 +108,12 @@ class TagIncantationPolicyConfiguration
 	}
 
 	@Bean
-	@Qualifier("tagIncantationExternalConsistencyPolicy")
-	IncantationExternalConsistencyPolicy<TagDomainModel> tagIncantationExternalConsistencyPolicy()
+	@Qualifier("tagCreationExternalConsistencyPolicy")
+	CreationExternalConsistencyPolicy<TagDomainModel> tagCreationExternalConsistencyPolicy()
 	{
 		return (source, afterModel) ->
 		{
-			if (source != IncantationSource.AUTHORITATIVE_EXTERNAL_EVENT)
+			if (source != OperationSource.AUTHORITATIVE_EXTERNAL_EVENT)
 			{
 				return Optional.empty();
 			}

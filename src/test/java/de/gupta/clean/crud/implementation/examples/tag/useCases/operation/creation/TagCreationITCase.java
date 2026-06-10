@@ -1,9 +1,9 @@
-package de.gupta.clean.crud.implementation.examples.tag.useCases.incantation;
+package de.gupta.clean.crud.implementation.examples.tag.useCases.operation.creation;
 
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.TagDomainModel;
-import de.gupta.clean.crud.implementation.examples.tag.useCases.incantation.register.domain.RegisterTagIncantation;
+import de.gupta.clean.crud.implementation.examples.tag.useCases.operation.creation.register.domain.RegisterTagCreation;
 import de.gupta.clean.crud.template.domain.model.exceptions.security.AccessDeniedException;
-import de.gupta.clean.crud.template.useCases.incantation.api.application.IncantationApplicationController;
+import de.gupta.clean.crud.template.useCases.operation.creation.api.application.CreationApplicationController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -14,22 +14,22 @@ import static de.gupta.clean.crud.implementation.examples.setup.TestTags.FAST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@DisplayName("Tag Incantation Tests")
-class TagIncantationITCase extends AbstractTagIncantationITCase
+@DisplayName("Tag Creation Tests")
+class TagCreationITCase extends AbstractTagCreationITCase
 {
 	@Autowired
-	@Qualifier("tagIncantationApplicationController")
-	private IncantationApplicationController<Long, TagDomainModel> tagIncantationApplicationController;
+	@Qualifier("tagCreationApplicationController")
+	private CreationApplicationController<Long, TagDomainModel> tagCreationApplicationController;
 
 	@Test
 	@Tag(FAST)
-	@DisplayName("Should create a tag through an internal incantation")
-	void shouldCreateTagThroughInternalIncantation() throws Exception
+	@DisplayName("Should create a tag through an internal creation")
+	void shouldCreateTagThroughInternalCreation() throws Exception
 	{
-		var tagName = uniqueTagName("tag-incantation");
+		var tagName = uniqueTagName("tag-creation");
 
-		var created = tagIncantationApplicationController.invokeInternalCommand(
-				new RegisterTagIncantation(tagName));
+		var created = tagCreationApplicationController.invokeInternalCommand(
+				new RegisterTagCreation(tagName));
 		var fetched = fetchTag(created.domainId());
 
 		assertThat(created.model().name()).isEqualTo(tagName);
@@ -44,13 +44,13 @@ class TagIncantationITCase extends AbstractTagIncantationITCase
 	{
 		var managedName = "managed:" + uniqueTagName("registry");
 
-		assertThatThrownBy(() -> tagIncantationApplicationController.invokeUserIntent(
-				new RegisterTagIncantation(managedName)))
+		assertThatThrownBy(() -> tagCreationApplicationController.invokeUserIntent(
+				new RegisterTagCreation(managedName)))
 				.isInstanceOf(AccessDeniedException.class)
 				.hasMessageContaining("managed tag names");
 
-		var created = tagIncantationApplicationController.invokeAuthoritativeExternalEvent(
-				new RegisterTagIncantation(managedName));
+		var created = tagCreationApplicationController.invokeAuthoritativeExternalEvent(
+				new RegisterTagCreation(managedName));
 		var fetched = fetchTag(created.domainId());
 
 		assertThat(created.model().name()).isEqualTo(managedName);
@@ -64,8 +64,8 @@ class TagIncantationITCase extends AbstractTagIncantationITCase
 	{
 		var plainName = uniqueTagName("tag-plain");
 
-		var result = tagIncantationApplicationController.invokeAuthoritativeExternalEventWithResult(
-				new RegisterTagIncantation(plainName));
+		var result = tagCreationApplicationController.invokeAuthoritativeExternalEventWithResult(
+				new RegisterTagCreation(plainName));
 
 		assertThat(result.quarantined()).isTrue();
 		assertThat(result.created()).isEmpty();

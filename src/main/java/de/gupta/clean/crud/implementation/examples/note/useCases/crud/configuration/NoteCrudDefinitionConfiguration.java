@@ -4,6 +4,7 @@ import de.gupta.clean.crud.implementation.examples.note.domain.model.NoteDomainM
 import de.gupta.clean.crud.implementation.examples.note.domain.model.dto.NoteDomainModelCreate;
 import de.gupta.clean.crud.implementation.examples.note.domain.model.dto.NoteDomainModelResponse;
 import de.gupta.clean.crud.implementation.examples.note.domain.model.dto.NoteDomainModelUpdatePatch;
+import de.gupta.clean.crud.implementation.examples.note.useCases.operation.creation.configuration.policy.NoteCreationPolicyAwareCrudDefinition;
 import de.gupta.clean.crud.template.domain.mapping.fetch.DomainResponseBuilder;
 import de.gupta.clean.crud.template.domain.mapping.save.DomainModelBuilder;
 import de.gupta.clean.crud.template.domain.mapping.update.DomainModelPatcher;
@@ -16,6 +17,7 @@ import de.gupta.clean.crud.template.useCases.crud.aggregate.builder.AggregateCru
 import de.gupta.clean.crud.template.useCases.crud.aggregate.definition.AggregateCrudDefinition;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateMutationPort;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.invariant.CreationInvariantPolicy;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,9 +38,10 @@ class NoteCrudDefinitionConfiguration
 			@Qualifier("notePatchPolicy") final PatchPolicy<NoteDomainModel> patchPolicy,
 			@Qualifier("noteDeletionPolicy") final DeletionPolicy<NoteDomainModel> deletionPolicy,
 			@Qualifier("noteDomainSecurityPolicy") final DomainSecurityPolicy<NoteDomainModel> securityPolicy,
-			@Qualifier("noteDuplicateDefinition") final DuplicateDefinition<NoteDomainModel> duplicateDefinition)
+			@Qualifier("noteDuplicateDefinition") final DuplicateDefinition<NoteDomainModel> duplicateDefinition,
+			@Qualifier("noteCreationInvariantPolicy") final CreationInvariantPolicy<NoteDomainModel> creationInvariantPolicy)
 	{
-		return AggregateCrudDefinitions
+		var baseDefinition = AggregateCrudDefinitions
 				.<Long, NoteDomainModel, NoteDomainModelCreate, NoteDomainModelUpdatePatch, NoteDomainModelResponse>aggregateCrudDefinition()
 				.mutationPort(mutationPort)
 				.fetchPort(fetchPort)
@@ -51,5 +54,7 @@ class NoteCrudDefinitionConfiguration
 				.securityPolicy(securityPolicy)
 				.duplicateDefinition(duplicateDefinition)
 				.build();
+
+		return new NoteCreationPolicyAwareCrudDefinition(baseDefinition, creationInvariantPolicy);
 	}
 }
