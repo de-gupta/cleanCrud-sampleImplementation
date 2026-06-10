@@ -32,9 +32,9 @@ class TagMutationITCase
 	void shouldApplyInternalRenameMutation() throws Exception
 	{
 		var createdTag = createTag(uniqueTagName("tag-internal"));
-		var renamed = tagMutationApplicationController.applyInternalCommand(
+		var renamed = tagMutationApplicationController.mutateInternalCommand(
 				createdTag.id(),
-				new RenameTagMutation(uniqueTagName("tag-renamed")));
+				new RenameTagMutation(uniqueTagName("tag-renamed"))).updatedOrThrow();
 		var fetched = fetchTag(createdTag.id());
 
 		assertThat(renamed.id()).isEqualTo(createdTag.id());
@@ -50,15 +50,15 @@ class TagMutationITCase
 		var createdTag = createTag(uniqueTagName("tag-managed"));
 		var managedName = "managed:" + uniqueTagName("registry");
 
-		assertThatThrownBy(() -> tagMutationApplicationController.applyUserIntent(
+		assertThatThrownBy(() -> tagMutationApplicationController.mutateUserIntent(
 				createdTag.id(),
 				new RenameTagMutation(managedName)))
 				.isInstanceOf(AccessDeniedException.class)
 				.hasMessageContaining("managed tag names");
 
-		var updated = tagMutationApplicationController.applyAuthoritativeExternalEvent(
+		var updated = tagMutationApplicationController.mutateAuthoritativeExternalEvent(
 				createdTag.id(),
-				new RenameTagMutation(managedName));
+				new RenameTagMutation(managedName)).updatedOrThrow();
 		var fetched = fetchTag(createdTag.id());
 
 		assertThat(updated.model().name()).isEqualTo(managedName);
@@ -73,11 +73,11 @@ class TagMutationITCase
 		var createdTag = createTag(uniqueTagName("tag-quarantine"));
 		var managedName = "managed:" + uniqueTagName("registry");
 
-		tagMutationApplicationController.applyAuthoritativeExternalEvent(
+		tagMutationApplicationController.mutateAuthoritativeExternalEvent(
 				createdTag.id(),
 				new RenameTagMutation(managedName));
 
-		var result = tagMutationApplicationController.applyAuthoritativeExternalEventWithResult(
+		var result = tagMutationApplicationController.mutateAuthoritativeExternalEventWithResult(
 				createdTag.id(),
 				new RenameTagMutation(uniqueTagName("plain")));
 

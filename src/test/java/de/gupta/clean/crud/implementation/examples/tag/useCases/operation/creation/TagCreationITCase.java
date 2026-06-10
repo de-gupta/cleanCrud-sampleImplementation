@@ -29,7 +29,7 @@ class TagCreationITCase extends AbstractTagCreationITCase
 		var tagName = uniqueTagName("tag-creation");
 
 		var created = tagCreationApplicationController.createInternalCommand(
-				new RegisterTagCreation(tagName));
+				new RegisterTagCreation(tagName)).createdOrThrow();
 		var fetched = fetchTag(created.domainId());
 
 		assertThat(created.model().name()).isEqualTo(tagName);
@@ -50,7 +50,7 @@ class TagCreationITCase extends AbstractTagCreationITCase
 				.hasMessageContaining("managed tag names");
 
 		var created = tagCreationApplicationController.createAuthoritativeExternalEvent(
-				new RegisterTagCreation(managedName));
+				new RegisterTagCreation(managedName)).createdOrThrow();
 		var fetched = fetchTag(created.domainId());
 
 		assertThat(created.model().name()).isEqualTo(managedName);

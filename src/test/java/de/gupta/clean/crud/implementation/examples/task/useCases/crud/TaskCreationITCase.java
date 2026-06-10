@@ -46,7 +46,7 @@ class TaskCreationITCase extends AbstractTaskITCase
 						title,
 						Optional.of("created from creation"),
 						Optional.of(7L),
-						List.of(noteOne, noteTwo)));
+						List.of(noteOne, noteTwo))).createdOrThrow();
 		var fetched = fetchTask(created.domainId());
 
 		assertThat(fetched.title()).isEqualTo(title);

@@ -32,7 +32,7 @@ class TaskMutationITCase extends AbstractTaskITCase
 				Optional.of("before"),
 				java.util.List.of(),
 				java.util.List.of()));
-		taskMutationApplicationController.applyInternalCommand(
+		taskMutationApplicationController.mutateInternalCommand(
 				createdTask.id(),
 				new AnnotateTaskMutation(uniqueTaskTitle("task-annotated"), "added from mutation"));
 		var fetched = fetchTask(createdTask.id());
