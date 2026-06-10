@@ -10,7 +10,6 @@ import de.gupta.clean.crud.template.useCases.crud.aggregate.engine.AggregateLife
 import de.gupta.clean.crud.template.useCases.operation.mutation.aggregate.service.AggregateMutationServices;
 import de.gupta.clean.crud.template.useCases.operation.mutation.api.application.MutationApplicationController;
 import de.gupta.clean.crud.template.useCases.operation.mutation.api.application.MutationApplicationControllers;
-import de.gupta.clean.crud.template.useCases.operation.mutation.application.service.MutationService;
 import de.gupta.clean.crud.template.useCases.operation.mutation.application.service.QuarantinableMutationService;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.AggregateMutationHandler;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.MutationHandlerRegistry;
@@ -29,7 +28,7 @@ class TaskMutationConfiguration
 	RegisteredMutationHandler<TaskDomainModel, AnnotateTaskMutation> taskAnnotateMutationHandler(
 			final AggregateMutationHandler<TaskDomainModel, AnnotateTaskMutation> handler)
 	{
-		return RegisteredMutationHandler.ofAggregate(AnnotateTaskMutation.class, handler);
+		return RegisteredMutationHandler.of(AnnotateTaskMutation.class, handler);
 	}
 
 	@Bean
@@ -55,7 +54,7 @@ class TaskMutationConfiguration
 	@Bean
 	@Qualifier("taskMutationApplicationController")
 	MutationApplicationController<Long, TaskDomainModel> taskMutationApplicationController(
-			@Qualifier("taskMutationService") final MutationService<Long, TaskDomainModel> service)
+			@Qualifier("taskMutationService") final QuarantinableMutationService<Long, TaskDomainModel> service)
 	{
 		return MutationApplicationControllers.controller(service);
 	}

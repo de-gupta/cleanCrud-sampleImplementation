@@ -10,9 +10,8 @@ import de.gupta.clean.crud.template.useCases.crud.aggregate.engine.AggregateLife
 import de.gupta.clean.crud.template.useCases.operation.creation.aggregate.service.AggregateCreationServices;
 import de.gupta.clean.crud.template.useCases.operation.creation.api.application.CreationApplicationController;
 import de.gupta.clean.crud.template.useCases.operation.creation.api.application.CreationApplicationControllers;
-import de.gupta.clean.crud.template.useCases.operation.creation.application.service.CreationService;
 import de.gupta.clean.crud.template.useCases.operation.creation.application.service.QuarantinableCreationService;
-import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.CreationHandler;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.AggregateCreationHandler;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.CreationHandlerRegistry;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.RegisteredCreationHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,7 +26,7 @@ class TagCreationConfiguration
 	@Bean
 	@Qualifier("tagRegisterCreationHandler")
 	RegisteredCreationHandler<TagDomainModelCreate, RegisterTagCreation> tagRegisterCreationHandler(
-			final CreationHandler<TagDomainModelCreate, RegisterTagCreation> handler)
+			final AggregateCreationHandler<TagDomainModelCreate, RegisterTagCreation> handler)
 	{
 		return RegisteredCreationHandler.of(RegisterTagCreation.class, handler);
 	}
@@ -55,7 +54,7 @@ class TagCreationConfiguration
 	@Bean
 	@Qualifier("tagCreationApplicationController")
 	CreationApplicationController<Long, TagDomainModel> tagCreationApplicationController(
-			@Qualifier("tagCreationService") final CreationService<Long, TagDomainModel> service)
+			@Qualifier("tagCreationService") final QuarantinableCreationService<Long, TagDomainModel> service)
 	{
 		return CreationApplicationControllers.controller(service);
 	}

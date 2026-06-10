@@ -10,8 +10,8 @@ import de.gupta.clean.crud.template.useCases.crud.aggregate.engine.AggregateLife
 import de.gupta.clean.crud.template.useCases.operation.mutation.aggregate.service.AggregateMutationServices;
 import de.gupta.clean.crud.template.useCases.operation.mutation.api.application.MutationApplicationController;
 import de.gupta.clean.crud.template.useCases.operation.mutation.api.application.MutationApplicationControllers;
-import de.gupta.clean.crud.template.useCases.operation.mutation.application.service.MutationService;
 import de.gupta.clean.crud.template.useCases.operation.mutation.application.service.QuarantinableMutationService;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.AggregateMutationHandler;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.MutationHandlerRegistry;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.RegisteredMutationHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,7 +26,7 @@ class TagMutationConfiguration
 	@Bean
 	@Qualifier("tagRenameMutationHandler")
 	RegisteredMutationHandler<TagDomainModel, RenameTagMutation> tagRenameMutationHandler(
-			final de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.MutationHandler<TagDomainModel, RenameTagMutation> handler)
+			final AggregateMutationHandler<TagDomainModel, RenameTagMutation> handler)
 	{
 		return RegisteredMutationHandler.of(RenameTagMutation.class, handler);
 	}
@@ -54,7 +54,7 @@ class TagMutationConfiguration
 	@Bean
 	@Qualifier("tagMutationApplicationController")
 	MutationApplicationController<Long, TagDomainModel> tagMutationApplicationController(
-			@Qualifier("tagMutationService") final MutationService<Long, TagDomainModel> service)
+			@Qualifier("tagMutationService") final QuarantinableMutationService<Long, TagDomainModel> service)
 	{
 		return MutationApplicationControllers.controller(service);
 	}

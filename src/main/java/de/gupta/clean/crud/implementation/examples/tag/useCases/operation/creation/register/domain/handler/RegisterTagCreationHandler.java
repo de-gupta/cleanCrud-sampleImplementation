@@ -2,16 +2,17 @@ package de.gupta.clean.crud.implementation.examples.tag.useCases.operation.creat
 
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.dto.TagDomainModelCreate;
 import de.gupta.clean.crud.implementation.examples.tag.useCases.operation.creation.register.domain.RegisterTagCreation;
-import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.CreationHandler;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.AggregateCreationHandler;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.plan.AggregateCreationPlan;
 import org.springframework.stereotype.Component;
 
 @Component
 final class RegisterTagCreationHandler
-		implements CreationHandler<TagDomainModelCreate, RegisterTagCreation>
+		implements AggregateCreationHandler<TagDomainModelCreate, RegisterTagCreation>
 {
 	@Override
-	public TagDomainModelCreate apply(final RegisterTagCreation payload)
+	public AggregateCreationPlan<TagDomainModelCreate> apply(final RegisterTagCreation payload)
 	{
-		return TagDomainModelCreate.of(payload.name());
+		return AggregateCreationPlan.rootOnly(TagDomainModelCreate.of(payload.name()));
 	}
 }

@@ -10,9 +10,8 @@ import de.gupta.clean.crud.template.useCases.crud.aggregate.engine.AggregateLife
 import de.gupta.clean.crud.template.useCases.operation.creation.aggregate.service.AggregateCreationServices;
 import de.gupta.clean.crud.template.useCases.operation.creation.api.application.CreationApplicationController;
 import de.gupta.clean.crud.template.useCases.operation.creation.api.application.CreationApplicationControllers;
-import de.gupta.clean.crud.template.useCases.operation.creation.application.service.CreationService;
 import de.gupta.clean.crud.template.useCases.operation.creation.application.service.QuarantinableCreationService;
-import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.CreationHandler;
+import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.AggregateCreationHandler;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.CreationHandlerRegistry;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.handler.RegisteredCreationHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,7 +26,7 @@ class TaskCreationConfiguration
 	@Bean
 	@Qualifier("taskRegisterCreationHandler")
 	RegisteredCreationHandler<TaskDomainModelCreate, RegisterTaskCreation> taskRegisterCreationHandler(
-			final CreationHandler<TaskDomainModelCreate, RegisterTaskCreation> handler)
+			final AggregateCreationHandler<TaskDomainModelCreate, RegisterTaskCreation> handler)
 	{
 		return RegisteredCreationHandler.of(RegisterTaskCreation.class, handler);
 	}
@@ -55,7 +54,7 @@ class TaskCreationConfiguration
 	@Bean
 	@Qualifier("taskCreationApplicationController")
 	CreationApplicationController<Long, TaskDomainModel> taskCreationApplicationController(
-			@Qualifier("taskCreationService") final CreationService<Long, TaskDomainModel> service)
+			@Qualifier("taskCreationService") final QuarantinableCreationService<Long, TaskDomainModel> service)
 	{
 		return CreationApplicationControllers.controller(service);
 	}
