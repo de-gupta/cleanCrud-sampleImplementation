@@ -4,7 +4,7 @@ import de.gupta.clean.crud.implementation.examples.tag.domain.model.TagDomainMod
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.dto.TagDomainModelCreate;
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.dto.TagDomainModelResponse;
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.dto.TagDomainModelUpdatePatch;
-import de.gupta.clean.crud.implementation.examples.tag.useCases.crud.configuration.policy.TagMutationPolicyAwareCrudDefinition;
+import de.gupta.clean.crud.implementation.examples.tag.useCases.crud.configuration.policy.TagApplicationPolicyAwareCrudDefinition;
 import de.gupta.clean.crud.template.domain.mapping.fetch.DomainResponseBuilder;
 import de.gupta.clean.crud.template.domain.mapping.save.DomainModelBuilder;
 import de.gupta.clean.crud.template.domain.mapping.update.DomainModelPatcher;
@@ -17,6 +17,11 @@ import de.gupta.clean.crud.template.useCases.crud.aggregate.builder.AggregateCru
 import de.gupta.clean.crud.template.useCases.crud.aggregate.definition.AggregateCrudDefinition;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateFetchPort;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.port.AggregateMutationPort;
+import de.gupta.clean.crud.template.useCases.incantation.domain.policy.access.IncantationAccessPolicy;
+import de.gupta.clean.crud.template.useCases.incantation.domain.policy.consistency.IncantationExternalConsistencyPolicy;
+import de.gupta.clean.crud.template.useCases.incantation.domain.policy.creation.IncantationCreationPolicy;
+import de.gupta.clean.crud.template.useCases.incantation.domain.policy.invariant.IncantationInvariantPolicy;
+import de.gupta.clean.crud.template.useCases.incantation.domain.policy.profile.IncantationPolicyProfileResolver;
 import de.gupta.clean.crud.template.useCases.mutation.domain.policy.access.AccessPolicy;
 import de.gupta.clean.crud.template.useCases.mutation.domain.policy.consistency.ExternalConsistencyPolicy;
 import de.gupta.clean.crud.template.useCases.mutation.domain.policy.invariant.DomainInvariantPolicy;
@@ -47,7 +52,12 @@ class TagCrudDefinitionConfiguration
 			@Qualifier("tagMutationAccessPolicy") final AccessPolicy<TagDomainModel> mutationAccessPolicy,
 			@Qualifier("tagMutationTransitionPolicy") final MutationTransitionPolicy<TagDomainModel> mutationTransitionPolicy,
 			@Qualifier("tagDomainInvariantPolicy") final DomainInvariantPolicy<TagDomainModel> domainInvariantPolicy,
-			@Qualifier("tagExternalConsistencyPolicy") final ExternalConsistencyPolicy<TagDomainModel> externalConsistencyPolicy)
+			@Qualifier("tagExternalConsistencyPolicy") final ExternalConsistencyPolicy<TagDomainModel> externalConsistencyPolicy,
+			@Qualifier("tagIncantationPolicyProfileResolver") final IncantationPolicyProfileResolver incantationPolicyProfileResolver,
+			@Qualifier("tagIncantationAccessPolicy") final IncantationAccessPolicy<TagDomainModel> incantationAccessPolicy,
+			@Qualifier("tagIncantationCreationPolicy") final IncantationCreationPolicy<TagDomainModel> incantationCreationPolicy,
+			@Qualifier("tagIncantationInvariantPolicy") final IncantationInvariantPolicy<TagDomainModel> incantationInvariantPolicy,
+			@Qualifier("tagIncantationExternalConsistencyPolicy") final IncantationExternalConsistencyPolicy<TagDomainModel> incantationExternalConsistencyPolicy)
 	{
 		var baseDefinition = AggregateCrudDefinitions
 				.<Long, TagDomainModel, TagDomainModelCreate, TagDomainModelUpdatePatch, TagDomainModelResponse>aggregateCrudDefinition()
@@ -67,12 +77,17 @@ class TagCrudDefinitionConfiguration
 						context.domainId()))
 				.build();
 
-		return new TagMutationPolicyAwareCrudDefinition(
+		return new TagApplicationPolicyAwareCrudDefinition(
 				baseDefinition,
 				mutationPolicyProfileResolver,
 				mutationAccessPolicy,
 				mutationTransitionPolicy,
 				domainInvariantPolicy,
-				externalConsistencyPolicy);
+				externalConsistencyPolicy,
+				incantationPolicyProfileResolver,
+				incantationAccessPolicy,
+				incantationCreationPolicy,
+				incantationInvariantPolicy,
+				incantationExternalConsistencyPolicy);
 	}
 }
