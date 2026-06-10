@@ -5,7 +5,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 public final class BenchmarkPostgresContainer
 {
 	private static final PostgreSQLContainer<?> container =
-			new PostgreSQLContainer<>("postgres:17.5")
+			new PostgreSQLContainer<>(System.getProperty("postgres.docker.image", "postgres:18.3"))
 					.withDatabaseName("bench")
 					.withUsername("bench")
 					.withPassword("bench");

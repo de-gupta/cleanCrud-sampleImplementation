@@ -19,6 +19,7 @@
         <cleanCrud.version>0.10.1-SNAPSHOT</cleanCrud.version>
         <test.jvm.args>-Djdk.attach.allowAttachSelf=true -XX:+EnableDynamicAgentLoading</test.jvm.args>
         <test.mode>medium</test.mode>
+        <postgres.docker.image>postgres:18.3</postgres.docker.image>
     </properties>
 
     <dependencies>
@@ -107,6 +108,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>${argLine} ${test.jvm.args}</argLine>
+                    <systemPropertyVariables>
+                        <postgres.docker.image>${postgres.docker.image}</postgres.docker.image>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
@@ -116,6 +120,7 @@
                     <argLine>${argLine} ${test.jvm.args}</argLine>
                     <systemPropertyVariables>
                         <testMode>${test.mode}</testMode>
+                        <postgres.docker.image>${postgres.docker.image}</postgres.docker.image>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

@@ -1,6 +1,6 @@
 services:
   database:
-    image: postgres:17.5
+    image: postgres:${POSTGRES_VERSION:-18.3}
     container_name: postgres_db
     ports:
       - "5432:5432"

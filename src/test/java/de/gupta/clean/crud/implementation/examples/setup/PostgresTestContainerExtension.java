@@ -11,7 +11,7 @@ public final class PostgresTestContainerExtension implements BeforeAllCallback
 {
 	@Container
 	private static final PostgreSQLContainer<?> POSTGRE_SQL_CONTAINER =
-			new PostgreSQLContainer<>("postgres:17.5")
+			new PostgreSQLContainer<>(System.getProperty("postgres.docker.image", "postgres:18.3"))
 					.withDatabaseName("test")
 					.withUsername("test")
 					.withPassword("test");
