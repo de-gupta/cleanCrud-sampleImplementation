@@ -1,17 +1,17 @@
-package de.gupta.clean.crud.implementation.examples.tag.useCases.mutation.rename.configuration.policy;
+package de.gupta.clean.crud.implementation.examples.tag.useCases.operation.mutation.rename.configuration.policy;
 
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.TagDomainModel;
 import de.gupta.clean.crud.template.domain.service.crud.policy.PatchPolicy;
 import de.gupta.clean.crud.template.domain.service.security.DomainSecurityPolicy;
-import de.gupta.clean.crud.template.useCases.mutation.domain.model.MutationSource;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.access.AccessPolicy;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.consistency.ExternalConsistencyPolicy;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.invariant.DomainInvariantPolicy;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.invariant.InvariantViolation;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.profile.MutationPolicyProfile;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.profile.MutationPolicyProfileResolver;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.transition.MutationTransitionPolicy;
-import de.gupta.clean.crud.template.useCases.mutation.domain.policy.violation.MutationViolationHandling;
+import de.gupta.clean.crud.template.useCases.operation.domain.model.OperationSource;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.access.AccessPolicy;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.consistency.ExternalConsistencyPolicy;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.invariant.DomainInvariantPolicy;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.invariant.InvariantViolation;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.profile.MutationPolicyProfile;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.profile.MutationPolicyProfileResolver;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.transition.MutationTransitionPolicy;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.violation.MutationViolationHandling;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,7 +51,7 @@ class TagMutationPolicyConfiguration
 	{
 		return (source, beforeModel, afterModel) ->
 		{
-			if (source == MutationSource.USER_INTENT)
+			if (source == OperationSource.USER_INTENT)
 			{
 				if (!securityPolicy.isAccessAllowed(beforeModel) || !securityPolicy.isAccessAllowed(afterModel))
 				{
@@ -110,7 +110,7 @@ class TagMutationPolicyConfiguration
 	{
 		return (source, beforeModel, afterModel) ->
 		{
-			if (source != MutationSource.AUTHORITATIVE_EXTERNAL_EVENT)
+			if (source != OperationSource.AUTHORITATIVE_EXTERNAL_EVENT)
 			{
 				return Optional.empty();
 			}

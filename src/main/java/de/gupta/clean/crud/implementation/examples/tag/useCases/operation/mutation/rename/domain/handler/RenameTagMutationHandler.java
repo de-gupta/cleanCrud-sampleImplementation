@@ -1,9 +1,9 @@
-package de.gupta.clean.crud.implementation.examples.tag.useCases.mutation.rename.domain.handler;
+package de.gupta.clean.crud.implementation.examples.tag.useCases.operation.mutation.rename.domain.handler;
 
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.TagDomainModel;
-import de.gupta.clean.crud.implementation.examples.tag.useCases.mutation.rename.domain.RenameTagMutation;
+import de.gupta.clean.crud.implementation.examples.tag.useCases.operation.mutation.rename.domain.RenameTagMutation;
 import de.gupta.clean.crud.template.domain.model.builder.ModelBuilderFactory;
-import de.gupta.clean.crud.template.useCases.mutation.domain.handler.MutationHandler;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.MutationHandler;
 import org.springframework.stereotype.Component;
 
 @Component

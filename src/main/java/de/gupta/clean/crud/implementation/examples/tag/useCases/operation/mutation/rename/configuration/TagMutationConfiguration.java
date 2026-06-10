@@ -1,18 +1,18 @@
-package de.gupta.clean.crud.implementation.examples.tag.useCases.mutation.rename.configuration;
+package de.gupta.clean.crud.implementation.examples.tag.useCases.operation.mutation.rename.configuration;
 
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.TagDomainModel;
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.dto.TagDomainModelCreate;
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.dto.TagDomainModelResponse;
 import de.gupta.clean.crud.implementation.examples.tag.domain.model.dto.TagDomainModelUpdatePatch;
-import de.gupta.clean.crud.implementation.examples.tag.useCases.mutation.rename.domain.RenameTagMutation;
+import de.gupta.clean.crud.implementation.examples.tag.useCases.operation.mutation.rename.domain.RenameTagMutation;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.definition.AggregateCrudDefinition;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.engine.AggregateLifecycleEngine;
-import de.gupta.clean.crud.template.useCases.mutation.aggregate.service.AggregateMutationServices;
-import de.gupta.clean.crud.template.useCases.mutation.api.application.MutationApplicationController;
-import de.gupta.clean.crud.template.useCases.mutation.api.application.MutationApplicationControllers;
-import de.gupta.clean.crud.template.useCases.mutation.application.service.MutationService;
-import de.gupta.clean.crud.template.useCases.mutation.domain.handler.MutationHandlerRegistry;
-import de.gupta.clean.crud.template.useCases.mutation.domain.handler.RegisteredMutationHandler;
+import de.gupta.clean.crud.template.useCases.operation.mutation.aggregate.service.AggregateMutationServices;
+import de.gupta.clean.crud.template.useCases.operation.mutation.api.application.MutationApplicationController;
+import de.gupta.clean.crud.template.useCases.operation.mutation.api.application.MutationApplicationControllers;
+import de.gupta.clean.crud.template.useCases.operation.mutation.application.service.MutationService;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.MutationHandlerRegistry;
+import de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.RegisteredMutationHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +25,7 @@ class TagMutationConfiguration
 	@Bean
 	@Qualifier("tagRenameMutationHandler")
 	RegisteredMutationHandler<TagDomainModel, RenameTagMutation> tagRenameMutationHandler(
-			final de.gupta.clean.crud.template.useCases.mutation.domain.handler.MutationHandler<TagDomainModel, RenameTagMutation> handler)
+			final de.gupta.clean.crud.template.useCases.operation.mutation.domain.handler.MutationHandler<TagDomainModel, RenameTagMutation> handler)
 	{
 		return RegisteredMutationHandler.of(RenameTagMutation.class, handler);
 	}
