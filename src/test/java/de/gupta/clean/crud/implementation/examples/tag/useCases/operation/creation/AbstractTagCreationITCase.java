@@ -36,6 +36,15 @@ abstract class AbstractTagCreationITCase
 		return objectMapper.readValue(result.getResponse().getContentAsString(), TagAPIModelResponse.class);
 	}
 
+	protected String fetchCreationQuarantine(final String quarantineId) throws Exception
+	{
+		MvcResult result = mockMvc.perform(get("/internal/creation-quarantines/{id}", quarantineId))
+		                          .andExpect(status().isOk())
+		                          .andReturn();
+
+		return result.getResponse().getContentAsString();
+	}
+
 	protected String uniqueTagName(final String prefix)
 	{
 		return prefix + "-" + System.nanoTime();

@@ -7,6 +7,7 @@ import de.gupta.clean.crud.implementation.examples.task.infrastructure.persisten
 import de.gupta.clean.crud.implementation.examples.task.useCases.operation.creation.register.domain.RegisterTaskCreation;
 import de.gupta.clean.crud.template.useCases.operation.creation.api.application.CreationApplicationController;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.violation.CreationPolicyViolation;
+import de.gupta.clean.crud.template.useCases.operation.creation.quarantine.application.CreationQuarantineService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ class TaskCreationITCase extends AbstractTaskITCase
 
 	@Autowired
 	private NoteJpaRepository noteJpaRepository;
+
+	@Autowired
+	private CreationQuarantineService creationQuarantineService;
 
 	@Test
 	@Tag(FAST)
@@ -62,7 +66,7 @@ class TaskCreationITCase extends AbstractTaskITCase
 	@Test
 	@Tag(FAST)
 	@DisplayName("Should quarantine authoritative external creation when an owned note requires review")
-	void shouldQuarantineAuthoritativeExternalCreationWhenOwnedNoteRequiresReview()
+	void shouldQuarantineAuthoritativeExternalCreationWhenOwnedNoteRequiresReview() throws Exception
 	{
 		var title = uniqueTaskTitle("task-creation-quarantine");
 		var quarantinedNote = "quarantine:broker-payload";
@@ -77,10 +81,38 @@ class TaskCreationITCase extends AbstractTaskITCase
 		assertThat(result.quarantined()).isTrue();
 		assertThat(result.created()).isEmpty();
 		assertThat(result.quarantineRequest()).isPresent();
+		assertThat(result.quarantineRequest().orElseThrow().quarantineId()).isPresent();
 		assertThat(result.quarantineRequest().orElseThrow().violations())
 				.extracting(CreationPolicyViolation::message)
 				.containsExactly("Authoritative note creation requires manual review");
+		var quarantineId = result.quarantineRequest().orElseThrow().quarantineId().orElseThrow();
+		assertThat(creationQuarantineService.findById(quarantineId)).isPresent();
+		assertThat(fetchCreationQuarantine(quarantineId.value())).contains(quarantineId.value())
+		                                                         .contains("OPEN");
 		assertThat(taskJpaRepository.findTitlesByTitleIn(List.of(title))).isEmpty();
 		assertThat(noteJpaRepository.existsByNote(quarantinedNote)).isFalse();
+	}
+
+	@Test
+	@Tag(FAST)
+	@DisplayName("Should replay a quarantined task creation with owned note creation")
+	void shouldReplayQuarantinedTaskCreationWithOwnedSatellites()
+	{
+		var title = uniqueTaskTitle("task-creation-replay");
+		var quarantinedNote = "quarantine:broker-replay";
+
+		var result = taskCreationApplicationController.createAuthoritativeExternalEventWithResult(
+				new RegisterTaskCreation(
+						title,
+						Optional.of("should replay"),
+						Optional.empty(),
+						List.of(quarantinedNote)));
+		var quarantineId = result.quarantineRequest().orElseThrow().quarantineId().orElseThrow();
+
+		var replayed = creationQuarantineService.replay(quarantineId);
+
+		assertThat(replayed.status()).hasToString("REPLAYED");
+		assertThat(taskJpaRepository.findTitlesByTitleIn(List.of(title))).containsExactly(title);
+		assertThat(noteJpaRepository.existsByNote(quarantinedNote)).isTrue();
 	}
 }

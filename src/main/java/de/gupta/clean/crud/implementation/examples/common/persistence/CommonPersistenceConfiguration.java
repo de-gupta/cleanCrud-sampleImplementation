@@ -4,6 +4,7 @@ import de.gupta.clean.crud.template.infrastructure.persistence.transaction.Persi
 import de.gupta.clean.crud.template.infrastructure.persistence.transaction.SpringPersistenceTransactionRunner;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.engine.AggregateLifecycleEngine;
 import de.gupta.clean.crud.template.useCases.crud.aggregate.engine.DefaultAggregateLifecycleEngine;
+import de.gupta.clean.crud.template.useCases.operation.creation.quarantine.application.recording.CreationQuarantineRecorder;
 import de.gupta.clean.crud.template.useCases.operation.mutation.quarantine.application.recording.MutationQuarantineRecorder;
 import de.gupta.clean.crud.template.useCases.process.application.execution.DurableProcessExecutionNudge;
 import de.gupta.clean.crud.template.useCases.process.application.registration.DurableProcessStarter;
@@ -26,12 +27,14 @@ public class CommonPersistenceConfiguration
 			final PersistenceTransactionRunner persistenceTransactionRunner,
 			final DurableProcessStarter durableProcessStarter,
 			final DurableProcessExecutionNudge durableProcessExecutionNudge,
-			final MutationQuarantineRecorder mutationQuarantineRecorder)
+			final MutationQuarantineRecorder mutationQuarantineRecorder,
+			final CreationQuarantineRecorder creationQuarantineRecorder)
 	{
-		return DefaultAggregateLifecycleEngine.withTransactionRunnerAndDurableProcessStarterExecutionNudgeAndMutationQuarantineRecorder(
+		return DefaultAggregateLifecycleEngine.withTransactionRunnerAndDurableProcessStarterExecutionNudgeAndQuarantineRecorders(
 				persistenceTransactionRunner,
 				durableProcessStarter,
 				durableProcessExecutionNudge,
-				mutationQuarantineRecorder);
+				mutationQuarantineRecorder,
+				creationQuarantineRecorder);
 	}
 }

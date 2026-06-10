@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -101,6 +101,15 @@ abstract class AbstractTaskITCase
 		                          .andReturn();
 
 		return objectMapper.readValue(result.getResponse().getContentAsString(), TaskAPIModelResponse.class);
+	}
+
+	protected String fetchCreationQuarantine(final String quarantineId) throws Exception
+	{
+		MvcResult result = mockMvc.perform(get("/internal/creation-quarantines/{id}", quarantineId))
+		                          .andExpect(status().isOk())
+		                          .andReturn();
+
+		return result.getResponse().getContentAsString();
 	}
 
 	protected TaskAPIModelResponse waitForTaskTitle(final Long taskId, final String expectedTitle) throws Exception
