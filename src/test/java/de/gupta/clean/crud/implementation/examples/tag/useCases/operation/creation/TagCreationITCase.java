@@ -28,7 +28,7 @@ class TagCreationITCase extends AbstractTagCreationITCase
 	{
 		var tagName = uniqueTagName("tag-creation");
 
-		var created = tagCreationApplicationController.invokeInternalCommand(
+		var created = tagCreationApplicationController.createInternalCommand(
 				new RegisterTagCreation(tagName));
 		var fetched = fetchTag(created.domainId());
 
@@ -44,12 +44,12 @@ class TagCreationITCase extends AbstractTagCreationITCase
 	{
 		var managedName = "managed:" + uniqueTagName("registry");
 
-		assertThatThrownBy(() -> tagCreationApplicationController.invokeUserIntent(
+		assertThatThrownBy(() -> tagCreationApplicationController.createUserIntent(
 				new RegisterTagCreation(managedName)))
 				.isInstanceOf(AccessDeniedException.class)
 				.hasMessageContaining("managed tag names");
 
-		var created = tagCreationApplicationController.invokeAuthoritativeExternalEvent(
+		var created = tagCreationApplicationController.createAuthoritativeExternalEvent(
 				new RegisterTagCreation(managedName));
 		var fetched = fetchTag(created.domainId());
 
@@ -64,7 +64,7 @@ class TagCreationITCase extends AbstractTagCreationITCase
 	{
 		var plainName = uniqueTagName("tag-plain");
 
-		var result = tagCreationApplicationController.invokeAuthoritativeExternalEventWithResult(
+		var result = tagCreationApplicationController.createAuthoritativeExternalEventWithResult(
 				new RegisterTagCreation(plainName));
 
 		assertThat(result.quarantined()).isTrue();

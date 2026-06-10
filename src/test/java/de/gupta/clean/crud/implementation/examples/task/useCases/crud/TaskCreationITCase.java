@@ -41,7 +41,7 @@ class TaskCreationITCase extends AbstractTaskITCase
 		var noteOne = "note-one-" + System.currentTimeMillis();
 		var noteTwo = "note-two-" + System.nanoTime();
 
-		var created = taskCreationApplicationController.invokeInternalCommand(
+		var created = taskCreationApplicationController.createInternalCommand(
 				new RegisterTaskCreation(
 						title,
 						Optional.of("created from creation"),
@@ -67,7 +67,7 @@ class TaskCreationITCase extends AbstractTaskITCase
 		var title = uniqueTaskTitle("task-creation-quarantine");
 		var quarantinedNote = "quarantine:broker-payload";
 
-		var result = taskCreationApplicationController.invokeAuthoritativeExternalEventWithResult(
+		var result = taskCreationApplicationController.createAuthoritativeExternalEventWithResult(
 				new RegisterTaskCreation(
 						title,
 						Optional.of("should not persist"),

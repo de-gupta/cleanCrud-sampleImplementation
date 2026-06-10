@@ -1,14 +1,16 @@
 package de.gupta.clean.crud.implementation.examples.task.useCases.crud;
 
 import de.gupta.clean.crud.implementation.examples.task.useCases.crud.common.dto.TaskAPIModelCreate;
+import de.gupta.clean.crud.template.useCases.process.application.execution.DurableProcessRunner;
 import de.gupta.clean.crud.template.useCases.process.domain.model.task.DurableProcessTaskStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import static de.gupta.clean.crud.implementation.examples.setup.TestTags.FAST;
@@ -16,19 +18,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Task Durable Process Retry Tests")
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
-@TestPropertySource(properties = "clean-crud.process.poll-interval=PT0.05S")
 class TaskDurableProcessRetryITCase extends AbstractTaskITCase
 {
+	@Autowired
+	private DurableProcessRunner durableProcessRunner;
+
 	@Test
 	@Tag(FAST)
-	@DisplayName("Should retry a failed durable task through the framework scheduler and eventually patch the task")
-	void shouldRetryDurableProcessThroughSchedulerAndEventuallyPatchTask() throws Exception
+	@DisplayName("Should retry a failed durable task through the durable recovery path and eventually patch the task")
+	void shouldRetryDurableProcessThroughRecoveryPathAndEventuallyPatchTask() throws Exception
 	{
 		var createdTask = createTask(TaskAPIModelCreate.of(
 				uniqueTaskTitle("Process Task [retry-once]"),
 				Optional.of("Task that should be retried once before printing")));
 		var waitingRetryTask =
 				waitForDurableProcessTaskStatus(createdTask.id(), DurableProcessTaskStatus.WAITING_RETRY);
+
+		var retryDueAt = waitingRetryTask.nextAttemptAt() == null
+				? Instant.now()
+				: waitingRetryTask.nextAttemptAt().plusMillis(1);
+
+		durableProcessRunner.runDueProcesses(retryDueAt, 10);
+
 		var updatedTask = waitForTaskTitle(createdTask.id(), createdTask.title() + " [printed]");
 		var succeededTask = waitForDurableProcessTaskStatus(createdTask.id(), DurableProcessTaskStatus.SUCCEEDED);
 
