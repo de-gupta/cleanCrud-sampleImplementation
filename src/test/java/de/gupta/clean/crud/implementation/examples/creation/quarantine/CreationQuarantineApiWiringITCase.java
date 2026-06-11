@@ -1,7 +1,7 @@
 package de.gupta.clean.crud.implementation.examples.creation.quarantine;
 
 import de.gupta.clean.crud.implementation.examples.setup.IntegrationTest;
-import de.gupta.clean.crud.template.useCases.operation.creation.quarantine.api.web.DefaultSpringRestCreationQuarantineController;
+import de.gupta.clean.crud.template.useCases.operation.quarantine.api.web.DefaultSpringRestCreationQuarantineController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;

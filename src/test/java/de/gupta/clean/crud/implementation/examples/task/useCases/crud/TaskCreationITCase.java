@@ -6,8 +6,9 @@ import de.gupta.clean.crud.implementation.examples.task.domain.model.TaskDomainM
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.repository.TaskJpaRepository;
 import de.gupta.clean.crud.implementation.examples.task.useCases.operation.creation.register.domain.RegisterTaskCreation;
 import de.gupta.clean.crud.template.useCases.operation.creation.api.application.CreationApplicationController;
-import de.gupta.clean.crud.template.useCases.operation.creation.quarantine.application.CreationQuarantineService;
 import de.gupta.clean.crud.template.useCases.operation.domain.policy.violation.OperationPolicyViolation;
+import de.gupta.clean.crud.template.useCases.operation.quarantine.application.service.QuarantineService;
+import de.gupta.clean.crud.template.useCases.operation.quarantine.domain.model.CreationReplayInputs;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ class TaskCreationITCase extends AbstractTaskITCase
 	private NoteJpaRepository noteJpaRepository;
 
 	@Autowired
-	private CreationQuarantineService creationQuarantineService;
+	private QuarantineService<CreationReplayInputs> creationQuarantineService;
 
 	@Test
 	@Tag(FAST)

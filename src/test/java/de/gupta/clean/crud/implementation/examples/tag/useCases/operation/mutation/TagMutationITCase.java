@@ -4,7 +4,8 @@ import de.gupta.clean.crud.implementation.examples.tag.domain.model.TagDomainMod
 import de.gupta.clean.crud.implementation.examples.tag.useCases.operation.mutation.rename.domain.RenameTagMutation;
 import de.gupta.clean.crud.template.domain.model.exceptions.security.AccessDeniedException;
 import de.gupta.clean.crud.template.useCases.operation.mutation.api.application.MutationApplicationController;
-import de.gupta.clean.crud.template.useCases.operation.mutation.quarantine.application.MutationQuarantineService;
+import de.gupta.clean.crud.template.useCases.operation.quarantine.application.service.QuarantineService;
+import de.gupta.clean.crud.template.useCases.operation.quarantine.domain.model.MutationReplayInputs;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ class TagMutationITCase
 	private MutationApplicationController<Long, TagDomainModel> tagMutationApplicationController;
 
 	@Autowired
-	private MutationQuarantineService mutationQuarantineService;
+	private QuarantineService<MutationReplayInputs> mutationQuarantineService;
 
 	@Test
 	@Tag(FAST)
