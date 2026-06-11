@@ -10,9 +10,9 @@ import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.cr
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.invariant.CreationInvariantPolicy;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.profile.CreationPolicyProfile;
 import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.profile.CreationPolicyProfileResolver;
-import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.violation.CreationViolationHandling;
 import de.gupta.clean.crud.template.useCases.operation.domain.model.OperationSource;
 import de.gupta.clean.crud.template.useCases.operation.domain.policy.invariant.InvariantViolation;
+import de.gupta.clean.crud.template.useCases.operation.domain.policy.violation.ViolationHandling;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,11 +38,11 @@ class TagCreationPolicyConfiguration
 			case INTERNAL_COMMAND, PROCESS_EMITTED_ACTION, ADMINISTRATIVE_REPLAY ->
 					CreationPolicyProfile.internalCommand();
 			case AUTHORITATIVE_EXTERNAL_EVENT -> new CreationPolicyProfile(
-					CreationViolationHandling.ALLOW,
-					CreationViolationHandling.REJECT,
-					CreationViolationHandling.QUARANTINE,
-					CreationViolationHandling.ALLOW,
-					CreationViolationHandling.QUARANTINE);
+					ViolationHandling.ALLOW,
+					ViolationHandling.REJECT,
+					ViolationHandling.QUARANTINE,
+					ViolationHandling.ALLOW,
+					ViolationHandling.QUARANTINE);
 		};
 	}
 

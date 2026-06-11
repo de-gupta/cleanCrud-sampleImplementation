@@ -5,13 +5,13 @@ import de.gupta.clean.crud.template.domain.service.crud.policy.PatchPolicy;
 import de.gupta.clean.crud.template.domain.service.security.DomainSecurityPolicy;
 import de.gupta.clean.crud.template.useCases.operation.domain.model.OperationSource;
 import de.gupta.clean.crud.template.useCases.operation.domain.policy.invariant.InvariantViolation;
+import de.gupta.clean.crud.template.useCases.operation.domain.policy.violation.ViolationHandling;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.access.AccessPolicy;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.consistency.ExternalConsistencyPolicy;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.invariant.DomainInvariantPolicy;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.profile.MutationPolicyProfile;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.profile.MutationPolicyProfileResolver;
 import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.transition.MutationTransitionPolicy;
-import de.gupta.clean.crud.template.useCases.operation.mutation.domain.policy.violation.MutationViolationHandling;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,11 +36,11 @@ class TagMutationPolicyConfiguration
 			case INTERNAL_COMMAND, PROCESS_EMITTED_ACTION, ADMINISTRATIVE_REPLAY ->
 					MutationPolicyProfile.internalCommand();
 			case AUTHORITATIVE_EXTERNAL_EVENT -> new MutationPolicyProfile(
-					MutationViolationHandling.ALLOW,
-					MutationViolationHandling.REJECT,
-					MutationViolationHandling.QUARANTINE,
-					MutationViolationHandling.ALLOW,
-					MutationViolationHandling.QUARANTINE);
+					ViolationHandling.ALLOW,
+					ViolationHandling.REJECT,
+					ViolationHandling.QUARANTINE,
+					ViolationHandling.ALLOW,
+					ViolationHandling.QUARANTINE);
 		};
 	}
 

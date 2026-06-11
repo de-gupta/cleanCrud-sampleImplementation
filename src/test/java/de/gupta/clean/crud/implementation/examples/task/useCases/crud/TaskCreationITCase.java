@@ -6,8 +6,8 @@ import de.gupta.clean.crud.implementation.examples.task.domain.model.TaskDomainM
 import de.gupta.clean.crud.implementation.examples.task.infrastructure.persistence.repository.TaskJpaRepository;
 import de.gupta.clean.crud.implementation.examples.task.useCases.operation.creation.register.domain.RegisterTaskCreation;
 import de.gupta.clean.crud.template.useCases.operation.creation.api.application.CreationApplicationController;
-import de.gupta.clean.crud.template.useCases.operation.creation.domain.policy.violation.CreationPolicyViolation;
 import de.gupta.clean.crud.template.useCases.operation.creation.quarantine.application.CreationQuarantineService;
+import de.gupta.clean.crud.template.useCases.operation.domain.policy.violation.OperationPolicyViolation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -83,7 +83,7 @@ class TaskCreationITCase extends AbstractTaskITCase
 		assertThat(result.quarantineRequest()).isPresent();
 		assertThat(result.quarantineRequest().orElseThrow().quarantineId()).isPresent();
 		assertThat(result.quarantineRequest().orElseThrow().violations())
-				.extracting(CreationPolicyViolation::message)
+				.extracting(OperationPolicyViolation::message)
 				.containsExactly("Authoritative note creation requires manual review");
 		var quarantineId = result.quarantineRequest().orElseThrow().quarantineId().orElseThrow();
 		assertThat(creationQuarantineService.findById(quarantineId)).isPresent();
